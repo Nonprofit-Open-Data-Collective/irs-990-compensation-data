@@ -1,4 +1,4 @@
-title: "Hospital 990 Schedule H Data"
+title: "IRS 990 Compensation and Board Database"
 author: "Blog Author"
 description: "Really cool blog about ..."
 
@@ -17,16 +17,15 @@ minimal_theme: false         # radically minimalistic theme
 navigation:                  # show navigation links in the header	
   - index.md
   - data.md  
-  - health-data.md
-  - lit-review.md
-  - resources.md
+  - white-paper.md
+  - projects.md
   - about.md
 
 
 
 icons:                       # show icons in the header, for all possible icons see http://fontawesome.io/icons/
   # envelope: "mailto:niklasbuschmann@users.noreply.github.com"
-  github: "https://github.com/lecy/irs-990-schedule-h/edit/master/docs/"
+  github: "https://github.com/Nonprofit-Open-Data-Collective/irs-990-compensation-data/edit/master/docs/"
   
   
   
