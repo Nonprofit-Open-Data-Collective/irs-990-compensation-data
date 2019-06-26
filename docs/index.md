@@ -3,7 +3,7 @@ layout: home
 title: Overview
 ---
 
-## Making Schedule H Data Available
+## Data on Nonprofit Leaders and Stewards
 
 Project description...
 
