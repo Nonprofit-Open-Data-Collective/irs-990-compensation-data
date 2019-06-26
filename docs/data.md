@@ -23,23 +23,6 @@ dat <- readRDS( gzcon( url( "https://github.com/Nonprofit-Open-Data-Collective/m
 
 -------------------
 
-# Overview of the Data
-
-
-## Raw Data Sources
-
-We have built a training dataset using data from two primary sources:
-
-## Processing
-
-## Enrichment
-
-* Title text  
-* Job role variables  
-* Job titles  
-* Name standardization & disambiguation 
-* Synthetic IDs      
-* Gender coding 
 
 
 
