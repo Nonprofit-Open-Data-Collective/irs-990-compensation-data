@@ -1,0 +1,148 @@
+---
+title: "Creating DFM for Mission and Programs"
+output:
+  html_document: default
+  pdf_document: default
+---
+Just using Quanteda at this point
+
+```{r, echo=TRUE}
+library(quanteda)
+```
+
+#Preprocessing data on organization name, mission, and programs
+
+Call in both datasets
+
+```{r, echo=TRUE}
+mission <- read.csv( "https://github.com/Nonprofit-Open-Data-Collective/machine_learning_mission_codes/blob/master/DATA/MISSION.csv?raw=true", stringsAsFactors=F )
+programs <- read.csv( "https://github.com/Nonprofit-Open-Data-Collective/machine_learning_mission_codes/blob/master/DATA/PROGRAMS.csv?raw=true", stringsAsFactors=F )
+
+```
+
+Reducing to the necessary columns and dropping any repeating observations
+
+```{r, echo=TRUE}
+mission <- mission[!duplicated(mission[c('EIN', 'TAXYR', 'F9_03_PZ_MISSION')]),]
+programs <- programs[!duplicated(programs[c('EIN', 'TAXYR', 'DESCRIPTION')]),]
+
+programs <- programs[, c("EIN", "TAXYR", "DESCRIPTION")]
+
+```
+
+Creating a single column with all of the text from name, mission, and programs before turing into a corpus
+
+
+```{r, echo=TRUE}
+mp <- merge(mission, programs, by=c( "EIN", "TAXYR"))
+mp$text <- paste(mp$NAME, mp$F9_03_PZ_MISSION, mp$DESCRIPTION)
+mp.lim <- mp[, c("EIN", "text")]
+
+```
+
+In addition, need to ensure all varaibles are characters in order to change to corpus
+
+```{r, echo=TRUE}
+mp.lim <- data.frame(lapply(mp.lim, as.character), stringsAsFactors=FALSE)
+```
+
+Converting data to a corpus using 'corpus' command from quanteda, text_field indicates which column holds the text data we want to analyze. Also creating a label for each listing in order ot ensure the data is labeled thorugh to the end of the analysis.
+
+
+```{r, echo=TRUE}
+mp.corp <- corpus(mp.lim,  text_field = "text")
+
+```
+
+We can look at the corpus to see how it's structured
+
+```{r, echo=TRUE}
+mp.corp
+mp.corp[2]
+summary(mp.corp)[1:10,]
+```
+
+Preprocessing steps before identifying Ngrams. We can do many of these steps quickly while converting to a document feature matrix later, but want to do them explicitly before identifying Ngrams. We make the text lower case, break into topens, and remove stopwords 
+
+```{r, echo=TRUE}
+mp.corp2 <- tolower(mp.corp)
+mp.corp2[2]
+mp.corp3 <- tokens(mp.corp2, remove_punct = TRUE)
+mp.corp3[2]
+mp.corp4 <- tokens_remove(tokens(mp.corp3), c(stopwords("english"), "nbsp"), padding  = F)
+mp.corp4[2]
+```
+
+Now looking at Ngrams. Looking for combinations of 2 and 3 words. I've exported the lists that were produces for us all to look over to decide what we want to capture into a dictionary. This code can be updated once we have a larger list. 
+
+```{r, echo=TRUE}
+myNgram2 <- tokens(mp.corp4) %>%
+  tokens_ngrams(n = 2) %>%
+  dfm()
+myNgram3 <- tokens(mp.corp4) %>%
+  tokens_ngrams(n = 3) %>%
+  dfm()
+
+myNgram2miss.df <- textstat_frequency(myNgram2)
+myNgram3miss.df <- textstat_frequency(myNgram3)
+
+topfeatures(myNgram2)
+topfeatures(myNgram3)
+
+```
+
+We can see the top candidates and others with the data created. Now create a dcitionary in order to identify and transofrm those combinations of words
+
+```{r, echo=TRUE}
+my_dict_prog <- dictionary(list(five01_c_3= c("501 c 3","section 501 c 3") ,
+                           jesus_christ=c("jesus christ"),
+                           high_school=c("high school"),
+                           non_profit=c("non-profit", "non profit"),
+                           stem=c("science technology engineering math", "science technology engineering mathematics"), 
+                           steam=c("science technology engineering art math", "science technology engineering art mathematics")))
+my_dict_place <- dictionary(list(ny_city=c("new york city"),
+                            ny_state=c("new york state"),
+                            ny=c("new york"),
+                            sf=c("san francisco"),
+                            san_diego=c("san diego"),
+                            santa_barbara=c("santa barbara"),
+                            new_hampshire=c("new hampshire"),
+                            new_orleans=c("new orleans"),
+                            san_antonio=c("san antonio"),
+                            san_gabriel=c("san gabriel"),
+                            santa_monica=c("santa monica"),
+                            santa_clarita=c("santa clarita"),
+                            los_angeles=c("los angeles"),
+                            united_states = c("united states")))
+                           
+mp.corp5 <- tokens_compound(mp.corp4, pattern = my_dict_prog)
+mp.corp6 <- tokens_compound(mp.corp5, pattern = my_dict_place)
+mp.corp7 <- sapply(mp.corp6, paste, collapse=c(" ", "  "))
+
+```
+
+converting to a document frequency matrix as a final step, and removing stems.
+
+```{r, echo=TRUE}
+mp.dfm <- dfm(mp.corp7,
+                   stem = T)
+mp.dfm
+topfeatures(mp.dfm, 20)
+
+```
+
+Now converting the DFM to a data frame and combing with corpus and original data
+
+```{r, echo=TRUE}
+
+mp.dfm.df <- convert(mp.dfm, to = "data.frame")
+mp.corpus.df <- as.data.frame(mp.corp7)
+
+colnames(mp.corpus.df) <- "Corpus"
+
+
+full.data <- cbind(mp, mp.corpus.df)
+full.data2 <- cbind(full.data, mp.dfm.df)
+
+
+```

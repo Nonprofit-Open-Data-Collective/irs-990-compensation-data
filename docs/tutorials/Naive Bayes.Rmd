@@ -1,0 +1,330 @@
+---
+title: "Classifying Org Purpose with Naive Bayes"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r cars}
+library(e1071)
+library(caret) #confusion matrix
+library(quanteda) # naive bayes
+library(pander) #attractive tables in rmarkdown
+```
+
+Calling in data from github. The second step removes all of the columns that preceed the document-features matrix that we don't want to include
+
+```{r, echo=TRUE}
+dat <- read.csv( "~/Dropbox (ASU)/USC Mission Paper/Data and Analysis/github_files/machine_learning_mission_codes/DATA/Name Mission Program w Corpus and DFM.csv" )
+dat2 <- (dat[,119:ncol(dat)])
+
+
+```
+
+Selecting one purpose varaible as the outcome we classify and then adding it backto the DFM. Could also add additional variables of interest at this stage
+
+```{r , echo=TRUE}
+others <- dat[,c("Incorporatedstate","Donatefundsyes","Onethirdsupportpublic","Onethirdsupportgifts",
+                 "Disasterreliefyes", "Orgpurposecharitable")]
+dat2 <- cbind(dat2, others)
+
+```
+
+Selecting a subset of observations as a training set
+
+```{r, echo=TRUE}
+
+set.seed(300)
+id_train <- sample(1:nrow(dat2), 1000, replace = FALSE)
+head(id_train, 10)
+```
+
+Changing out data to a corpus as an intermediatry step to convert it to a dfm
+
+```{r , echo=TRUE}
+
+dat2$id_numeric <- 1:nrow(dat2)
+dat.corpus <- data.frame(lapply(dat2, as.character), stringsAsFactors=FALSE)
+dat.corpus <- corpus(dat.corpus,        text_field = "Corpus")
+
+
+```
+With a corpus, we can use corpus_subset in order to selct the observations that are and are not in the trainging set. The final bit of code then converts it to a dfm. The naive bayes command requires a dfm
+
+```{r, echo=TRUE}
+training_nb <- corpus_subset(dat.corpus, id_numeric %in% id_train)%>%
+    dfm(stem = TRUE)
+
+test_nb <- corpus_subset(dat.corpus, !id_numeric %in% id_train)%>%
+    dfm(stem = TRUE)
+
+```
+
+textmodel_nb runs the naive bayes for the training set
+
+```{r, echo=TRUE}
+
+train_results <- textmodel_nb(training_nb, docvars(training_nb, "Orgpurposecharitable"))
+summary(train_results)
+```
+
+need to make sure features in the two data sets match before using the training data on the test set
+
+```{r, echo=TRUE}
+dfmat_matched <- dfm_select(test_nb, pattern=training_nb, selection = "keep")
+
+
+```
+
+Here we use the training data with the test data and see how well it performed
+
+```{r, echo=TRUE}
+actual_class <- docvars(dfmat_matched, "Orgpurposecharitable")
+predicted_class <- predict(train_results, newdata = dfmat_matched)
+tab_class <- prop.table(table(actual_class, predicted_class))
+tab_class
+
+
+```
+A confusion matrix from the caret package can give us additional detail to evaluate the outcome
+
+```{r, echo=TRUE}
+confusionMatrix(tab_class, mode = "everything")
+
+
+```
+We can convert the confusion matrix to a data frame and then combine it with tests for other organization purposes to compare the models for different classifications
+
+```{r, echo=TRUE}
+cm <- confusionMatrix(tab_class, mode = "everything")
+tocsv<-as.data.frame(t(data.frame(cbind(t(cm$byClass),t(cm$overall)))))
+
+```
+
+
+```{r, echo=FALSE}
+
+others <- dat[,c("Incorporatedstate","Donatefundsyes","Onethirdsupportpublic","Onethirdsupportgifts",
+                 "Disasterreliefyes", "Orgpurposereligious")]
+dat2 <- cbind(dat2, others)
+
+set.seed(300)
+id_train <- sample(1:nrow(dat2), 1000, replace = FALSE)
+
+dat2$id_numeric <- 1:nrow(dat2)
+dat.corpus <- data.frame(lapply(dat2, as.character), stringsAsFactors=FALSE)
+dat.corpus <- corpus(dat.corpus, 
+                     text_field = "Corpus")
+
+dfmat_training <- corpus_subset(dat.corpus, id_numeric %in% id_train) %>%
+  dfm(stem = TRUE)
+dfmat_test <- corpus_subset(dat.corpus, !id_numeric %in% id_train) %>%
+  dfm(stem = TRUE)
+
+tmod_nb <- textmodel_nb(dfmat_training, docvars(dfmat_training, "Orgpurposereligious"))
+dfmat_matched <- dfm_select(dfmat_test, pattern=dfmat_training, selection = "keep")
+
+actual_class <- docvars(dfmat_matched, "Orgpurposereligious")
+predicted_class <- predict(tmod_nb, newdata = dfmat_matched)
+tab_class <- prop.table(table(actual_class, predicted_class))
+cm <- confusionMatrix(tab_class, mode = "everything")
+tocsv <-cbind(tocsv, as.data.frame(t(data.frame(cbind(t(cm$byClass),t(cm$overall))))))
+
+
+####Orgpurposeeducational
+
+
+
+
+others <- dat[,c("Incorporatedstate","Donatefundsyes","Onethirdsupportpublic","Onethirdsupportgifts",
+                 "Disasterreliefyes", "Orgpurposeeducational")]
+dat2 <- cbind(dat2, others)
+
+set.seed(1500)
+id_train <- sample(1:nrow(dat2), 1500, replace = FALSE)
+
+dat2$id_numeric <- 1:nrow(dat2)
+dat.corpus <- data.frame(lapply(dat2, as.character), stringsAsFactors=FALSE)
+dat.corpus <- corpus(dat.corpus, 
+                     text_field = "Corpus")
+
+dfmat_training <- corpus_subset(dat.corpus, id_numeric %in% id_train) %>%
+  dfm(stem = TRUE)
+dfmat_test <- corpus_subset(dat.corpus, !id_numeric %in% id_train) %>%
+  dfm(stem = TRUE)
+
+tmod_nb <- textmodel_nb(dfmat_training, docvars(dfmat_training, "Orgpurposeeducational"))
+dfmat_matched <- dfm_select(dfmat_test, pattern=dfmat_training, selection = "keep")
+
+actual_class <- docvars(dfmat_matched, "Orgpurposeeducational")
+predicted_class <- predict(tmod_nb, newdata = dfmat_matched)
+tab_class <- prop.table(table(actual_class, predicted_class))
+cm <- confusionMatrix(tab_class, mode = "everything")
+tocsv <-cbind(tocsv, as.data.frame(t(data.frame(cbind(t(cm$byClass),t(cm$overall))))))
+
+###Orgpurposescientific
+
+
+
+others <- dat[,c("Incorporatedstate","Donatefundsyes","Onethirdsupportpublic","Onethirdsupportgifts",
+                 "Disasterreliefyes", "Orgpurposescientific")]
+dat2 <- cbind(dat2, others)
+
+set.seed(1500)
+id_train <- sample(1:nrow(dat2), 1500, replace = FALSE)
+
+dat2$id_numeric <- 1:nrow(dat2)
+dat.corpus <- data.frame(lapply(dat2, as.character), stringsAsFactors=FALSE)
+dat.corpus <- corpus(dat.corpus, 
+                     text_field = "Corpus")
+
+dfmat_training <- corpus_subset(dat.corpus, id_numeric %in% id_train) %>%
+  dfm(stem = TRUE)
+dfmat_test <- corpus_subset(dat.corpus, !id_numeric %in% id_train) %>%
+  dfm(stem = TRUE)
+
+tmod_nb <- textmodel_nb(dfmat_training, docvars(dfmat_training, "Orgpurposescientific"))
+dfmat_matched <- dfm_select(dfmat_test, pattern=dfmat_training, selection = "keep")
+
+actual_class <- docvars(dfmat_matched, "Orgpurposescientific")
+predicted_class <- predict(tmod_nb, newdata = dfmat_matched)
+tab_class <- prop.table(table(actual_class, predicted_class))
+cm <- confusionMatrix(tab_class, mode = "everything")
+tocsv <-cbind(tocsv, as.data.frame(t(data.frame(cbind(t(cm$byClass),t(cm$overall))))))
+
+
+
+#Orgpurposeliterary
+
+
+
+others <- dat[,c("Incorporatedstate","Donatefundsyes","Onethirdsupportpublic","Onethirdsupportgifts",
+                 "Disasterreliefyes", "Orgpurposeliterary")]
+dat2 <- cbind(dat2, others)
+
+set.seed(1500)
+id_train <- sample(1:nrow(dat2), 1500, replace = FALSE)
+
+dat2$id_numeric <- 1:nrow(dat2)
+dat.corpus <- data.frame(lapply(dat2, as.character), stringsAsFactors=FALSE)
+dat.corpus <- corpus(dat.corpus, 
+                     text_field = "Corpus")
+
+dfmat_training <- corpus_subset(dat.corpus, id_numeric %in% id_train) %>%
+  dfm(stem = TRUE)
+dfmat_test <- corpus_subset(dat.corpus, !id_numeric %in% id_train) %>%
+  dfm(stem = TRUE)
+
+tmod_nb <- textmodel_nb(dfmat_training, docvars(dfmat_training, "Orgpurposeliterary"))
+dfmat_matched <- dfm_select(dfmat_test, pattern=dfmat_training, selection = "keep")
+
+actual_class <- docvars(dfmat_matched, "Orgpurposeliterary")
+predicted_class <- predict(tmod_nb, newdata = dfmat_matched)
+tab_class <- prop.table(table(actual_class, predicted_class))
+cm <- confusionMatrix(tab_class, mode = "everything")
+tocsv <-cbind(tocsv, as.data.frame(t(data.frame(cbind(t(cm$byClass),t(cm$overall))))))
+
+
+
+###Orgpurposepublicsafety
+
+
+
+others <- dat[,c("Incorporatedstate","Donatefundsyes","Onethirdsupportpublic","Onethirdsupportgifts",
+                 "Disasterreliefyes", "Orgpurposepublicsafety")]
+dat2 <- cbind(dat2, others)
+
+set.seed(1500)
+id_train <- sample(1:nrow(dat2), 1500, replace = FALSE)
+
+dat2$id_numeric <- 1:nrow(dat2)
+dat.corpus <- data.frame(lapply(dat2, as.character), stringsAsFactors=FALSE)
+dat.corpus <- corpus(dat.corpus, 
+                     text_field = "Corpus")
+
+dfmat_training <- corpus_subset(dat.corpus, id_numeric %in% id_train) %>%
+  dfm(stem = TRUE)
+dfmat_test <- corpus_subset(dat.corpus, !id_numeric %in% id_train) %>%
+  dfm(stem = TRUE)
+
+tmod_nb <- textmodel_nb(dfmat_training, docvars(dfmat_training, "Orgpurposepublicsafety"))
+dfmat_matched <- dfm_select(dfmat_test, pattern=dfmat_training, selection = "keep")
+
+actual_class <- docvars(dfmat_matched, "Orgpurposepublicsafety")
+predicted_class <- predict(tmod_nb, newdata = dfmat_matched)
+tab_class <- prop.table(table(actual_class, predicted_class))
+cm <- confusionMatrix(tab_class, mode = "everything")
+tocsv <-cbind(tocsv, as.data.frame(t(data.frame(cbind(t(cm$byClass),t(cm$overall))))))
+
+####Orgpurposeamateursports
+
+
+others <- dat[,c("Incorporatedstate","Donatefundsyes","Onethirdsupportpublic","Onethirdsupportgifts",
+                 "Disasterreliefyes", "Orgpurposeamateursports")]
+dat2 <- cbind(dat2, others)
+
+set.seed(1500)
+id_train <- sample(1:nrow(dat2), 1500, replace = FALSE)
+
+dat2$id_numeric <- 1:nrow(dat2)
+dat.corpus <- data.frame(lapply(dat2, as.character), stringsAsFactors=FALSE)
+dat.corpus <- corpus(dat.corpus, 
+                     text_field = "Corpus")
+
+dfmat_training <- corpus_subset(dat.corpus, id_numeric %in% id_train) %>%
+  dfm(stem = TRUE)
+dfmat_test <- corpus_subset(dat.corpus, !id_numeric %in% id_train) %>%
+  dfm(stem = TRUE)
+
+tmod_nb <- textmodel_nb(dfmat_training, docvars(dfmat_training, "Orgpurposeamateursports"))
+dfmat_matched <- dfm_select(dfmat_test, pattern=dfmat_training, selection = "keep")
+
+actual_class <- docvars(dfmat_matched, "Orgpurposeamateursports")
+predicted_class <- predict(tmod_nb, newdata = dfmat_matched)
+tab_class <- prop.table(table(actual_class, predicted_class))
+cm <- confusionMatrix(tab_class, mode = "everything")
+tocsv <-cbind(tocsv, as.data.frame(t(data.frame(cbind(t(cm$byClass),t(cm$overall))))))
+
+####Orgpurposecrueltyprevention
+
+
+others <- dat[,c("Incorporatedstate","Donatefundsyes","Onethirdsupportpublic","Onethirdsupportgifts",
+                 "Disasterreliefyes", "Orgpurposecrueltyprevention")]
+dat2 <- cbind(dat2, others)
+
+set.seed(1500)
+id_train <- sample(1:nrow(dat2), 1500, replace = FALSE)
+
+dat2$id_numeric <- 1:nrow(dat2)
+dat.corpus <- data.frame(lapply(dat2, as.character), stringsAsFactors=FALSE)
+dat.corpus <- corpus(dat.corpus, 
+                     text_field = "Corpus")
+
+dfmat_training <- corpus_subset(dat.corpus, id_numeric %in% id_train) %>%
+  dfm(stem = TRUE)
+dfmat_test <- corpus_subset(dat.corpus, !id_numeric %in% id_train) %>%
+  dfm(stem = TRUE)
+
+tmod_nb <- textmodel_nb(dfmat_training, docvars(dfmat_training, "Orgpurposecrueltyprevention"))
+dfmat_matched <- dfm_select(dfmat_test, pattern=dfmat_training, selection = "keep")
+
+actual_class <- docvars(dfmat_matched, "Orgpurposecrueltyprevention")
+predicted_class <- predict(tmod_nb, newdata = dfmat_matched)
+tab_class <- prop.table(table(actual_class, predicted_class))
+cm <- confusionMatrix(tab_class, mode = "everything")
+tocsv <-cbind(tocsv, as.data.frame(t(data.frame(cbind(t(cm$byClass),t(cm$overall))))))
+
+colnames(tocsv) <- c("Charity", "Religious", "Education", "Scientific", "Literary", "Safety", "Sports", "Cruelty")
+                   
+
+```
+
+We can rerun that code using the other organization purposes in the data, and combine them into a data frame to compare the sucess of the naive bayes
+
+```{r, echo=TRUE}
+pandoc.table(tocsv)
+```
+
+Credit to the tutorials on the Quanteda website, where much of this was originally learned

@@ -1,0 +1,9 @@
+# Sample Creation
+
+Documentation of creation of sample from 1023-EZ and IRS 990-efile case. 
+
+Raw files...
+
+Code...
+
+Output...

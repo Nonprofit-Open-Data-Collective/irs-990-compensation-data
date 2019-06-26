@@ -1,0 +1,39 @@
+---	
+---	
+
+@function reduce ($percent)	
+ @return rgba(mix(#282828, #fff), $percent / 100)	
+
+html	
+ background: #666	
+
+body	
+ margin: 0 12%	
+
+body > header, article, body > footer	
+ padding: 1.5em calc(24% - 4em)	
+
+body > header	
+ color: #fff	
+ background: #282828	
+ padding-top: 1.75em	
+ padding-bottom: 1.75em	
+
+body > header h1	
+ line-height: inherit	
+
+body > footer	
+ color: reduce(100)	
+ background: reduce(5)	
+
+article, body > footer	
+ border-top: 1px solid reduce(8)	
+
+article	
+ background: reduce(2)	
+
+.gray, .disabled	
+ margin: -0.5em 0	
+
+.archive time	
+ color: reduce(100)

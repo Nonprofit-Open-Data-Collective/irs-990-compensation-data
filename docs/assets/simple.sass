@@ -1,0 +1,36 @@
+---
+---
+
+@function reduce ($percent)
+  @return rgba(mix(#282828, #fff), $percent / 100)
+
+body
+  margin: 0
+
+body > header, article, body > footer
+  padding: 1.5em calc(26% - 4em)
+
+body > footer
+  color: reduce(100)
+  background: reduce(5)
+
+article, body > footer
+  border-top: 1px solid reduce(8)
+
+.gray, .disabled
+  margin: -0.5em 0
+
+.archive time
+  color: reduce(100)
+
+{% if site.dark_theme %}
+
+article
+  background: reduce(2)
+
+{% else %}
+
+body > header
+  box-shadow: 0 0 2em rgba(0, 0, 0, 0.04)
+
+{% endif %}
