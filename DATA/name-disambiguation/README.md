@@ -16,6 +16,7 @@ These variants are referred to as:
 One way to approach name standardization is converting all diminutive versions of names back to their proper form. The basic substitution would be something like:
 
 nickname | propername 
+---------| ------------ 
 rick | richard 
 rich | richard 
 ricky | richard 
