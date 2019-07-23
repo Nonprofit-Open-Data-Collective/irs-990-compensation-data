@@ -51,7 +51,7 @@ dat <- readRDS( gzcon( url( "https://www.dropbox.com/s/9m10ehisqjq9u6x/role-and-
 
 ### Output
 
-1. [Clean Titles](https://www.dropbox.com/s/udrfdio4ndi937k/clean-titles.html?dl=1)
-2. [Title Categories](https://www.dropbox.com/s/1y25m3764vo8zl0/title-categories.html?dl=1)
-3. [Categorized Titles](https://www.dropbox.com/s/9as8trc7dpjqtvz/categorized-titles.html?dl=1)
-4. [Roles and Responsibilities](https://www.dropbox.com/s/f3hbz7ic8lu628m/roles-and-responsibilities.html?dl=1)
+1. [Clean Titles](hhttps://www.dropbox.com/s/s9tva1x1dgu34xx/clean-titles.html?dl=1)
+2. [Title Categories](https://www.dropbox.com/s/s9tva1x1dgu34xx/clean-titles.html?dl=1)
+3. [Categorized Titles](https://www.dropbox.com/s/qb6q0u0ngll88ea/categorized-titles.html?dl=1)
+4. [Roles and Responsibilities](https://www.dropbox.com/s/sztcl23wnw1fnfm/roles-and-responsibilities.html?dl=1)
