@@ -1,0 +1,1143 @@
+---
+title: "Officer Catagories"
+output: 
+  
+    html_document:
+    toc: true
+    toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set( echo = TRUE, message=F, warning=F, cache = F )
+```
+# Catagorizing officer Titles
+
+
+Steps to clean and Sort Officers Into Categories
+
+1. Create Sample of 501c3 Organizations and individuals that work more than 20 hours a week
+
+2. Clean Titles
+
+3. Create Catagories
+
+4. Sort 1000 Most common Titles into Catagorize
+
+5. Check Ambigious Titles against Additional Information
+
+# Required Packages
+
+```{r}
+
+require( dplyr )
+require( pander )
+require( stringr )
+require( hunspell )
+
+dat <- readRDS( "Data/p7a_data.rds" )
+
+head( dat ) %>% pander
+
+```
+
+## Create Sample
+
+Start by isolating only managers ( not board members ) of nonprofits:
+
+* 501c3 nonprofits
+* Paid members only
+* Work more than part time
+
+```{r}
+
+dat$totalComp <- dat$RptCmpOrg + dat$RptCmpRltd + dat$OtherComp
+
+d2 <- filter( dat, Org501c3==1  &  totalComp > 1  &  AvgHrs > 20 )
+
+
+```
+
+## Data CLEANING  {.tabset}
+
+### String Processing
+
+* Add Space to Start and end of Strings
+
+```{r}
+
+d2$TitleTxt2 <- d2$TitleTxt %>% toupper()
+
+d2$TitleTxt2 <- str_c( " ",d2$TitleTxt2 )
+d2$TitleTxt2 <- str_c( d2$TitleTxt2," " )
+```
+
+* Remove punctuation 
+
+```{r}
+#d2$TitleTxt2 <- gsub( "[.]", " vwv ", d2$TitleTxt2 )
+#d2$TitleTxt2 <- gsub( "[,]", " vwv ", d2$TitleTxt2 )
+#d2$TitleTxt2 <- gsub( "[/]", " vwv ", d2$TitleTxt2 )
+#d2$TitleTxt2 <- gsub( "[&]", " vwv ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( "[[:punct:]]", " ", d2$TitleTxt2 )
+
+#d2$TitleTxt2 <- gsub( " vwv ", " & ", d2$TitleTxt2 )
+```
+
+* Replace / with &
+
+* Remove dates and digits
+
+```{r}
+d2$TitleTxt2 <- gsub( "C0", "CO", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( "[0-9]+", " ", d2$TitleTxt2 )
+```
+
+* Remove Spaces
+
+```{r}
+d2$TitleTxt2 <- gsub( "  ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( "  ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( "  ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( "  ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( "  ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( "  ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( "  ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( "  ", " ", d2$TitleTxt2 )
+```
+
+### Vice Presidents
+
+```{r}
+
+#Vice President
+d2$TitleTxt2 <- gsub( " AVP ", " ASSISTANT VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " A VP ", " ASSISTANT VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " A V P ", " ASSISTANT VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " VC ", " VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " VP ", " VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " V P ", " VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " V P ", " VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " V PRES ", " VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " V PRESI ", " VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " V PRESID ", " VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " V PRESIDE ", " VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " V PRESIDEN ", " VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " V PRESIDENT ", " VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " VICEPRESIDENT ", " VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " EVP ", " EXECUTIVE VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " E VP ", " EXECUTIVE VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " E V P ", " EXECUTIVE VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " E V PRESIDENT ", " EXECUTIVE VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " E VICE ", " EXECUTIVE VICE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SVP ", " SENIOR VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SRVP ", " SENIOR VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " S VP ", " SENIOR VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " S V P ", " SENIOR VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " S VICE ", " SENIOR VICE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " E S V P ", " EXECUTIVE SENIOR VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " E S VP ", " EXECUTIVE SENIOR VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " E SVP ", " EXECUTIVE SENIOR VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ESVP ", " EXECUTIVE SENIOR VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " AVP ", " ASSOCIATE VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " S E V P ", " SENIOR EXECUTIVE VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " S E VP ", " SENIOR EXECUTIVE VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " S EVP ", " SENIOR EXECUTIVE VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SEVP ", " SENIOR EXECUTIVE VICE PRESIDENT ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " V P F ", "  VICE PRESIDENT FINANCE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " VPF ", "  VICE PRESIDENT FINANCE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " V P O ", "  VICE PRESIDENT OPERATIONS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " V P O ", "  VICE PRESIDENT OPERATIONS ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " VPHR ", "  VICE PRESIDENT HUMAN RESOURCES ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " V P H R ", "  VICE PRESIDENT HUMAN RESOURCES ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " VPMA ", "  VICE PRESIDENT MEDICAL AFFAIRS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " V P M A ", "  VICE PRESIDENT MEDICAL AFFAIRS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " VP", "  VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PRESIDENT PRESIDENT ", " PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PRESIDENT PRESIDENT ", " PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " VICE PRESIDENT VICE PRESIDENT ", " VICE PRESIDENT ", d2$TitleTxt2 )
+
+```
+
+
+### Convert To Uniform Titles
+
+```{r}
+#EXECUTIVE
+d2$TitleTxt2 <- gsub( " EXC ", " EXECUTIVE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " EXE ", " EXECUTIVE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " EXEC ", " EXECUTIVE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " EXECU ", " EXECUTIVE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " EXECUT ", " EXECUTIVE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " EXECUTI ", " EXECUTIVE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " EXECUTIV ", " EXECUTIVE ", d2$TitleTxt2 )
+                     
+#Director
+d2$TitleTxt2 <- gsub( " DI ", " DIRECTOR ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " DIR ", " DIRECTOR ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " DIRE ", " DIRECTOR ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " DIREC ", " DIRECTOR ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " DIRECT ", " DIRECTOR ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " DIRECTO ", " DIRECTOR ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " DIRECTOR", " DIRECTOR ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " DIRCTR", " DIRECTOR ", d2$TitleTxt2 )
+
+#Operations
+d2$TitleTxt2 <- gsub( " OP ", " OPERATIONS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " OPS ", " OPERATIONS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " OPE ", " OPERATIONS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " OPER ", " OPERATIONS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " OPERA ", " OPERATIONS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " OPERAT ", " OPERATIONS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " OPERATI ", " OPERATIONS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " OPERATIO ", " OPERATIONS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " OPERATION ", " OPERATIONS ", d2$TitleTxt2 )
+
+#ASSITANT
+d2$TitleTxt2 <- gsub( " ASST ", " ASSISTANT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ASSOC ", " ASSOCIATE ", d2$TitleTxt2 )
+
+#PRESIDENT
+d2$TitleTxt2 <- gsub( " PRES ", " PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PRESI ", " PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PRESID ", " PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PRESIDE ", " PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PRESIDEN ", " PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PRESIDENT", " PRESIDENT ", d2$TitleTxt2 )
+
+#SECRETARY
+d2$TitleTxt2 <- gsub( " SEC ", " SECRETARY ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SECR ", " SECRETARY ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SECRE ", " SECRETARY ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SECRET ", " SECRETARY ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SECRETA ", " SECRETARY ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SECRETAR ", " SECRETARY ", d2$TitleTxt2 )
+
+#TREASURER
+d2$TitleTxt2 <- gsub( " TR ", " TREASURER ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " TRE ", " TREASURER ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " TREA ", " TREASURER ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " TREAS ", " TREASURER ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " TREASU ", " TREASURER ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " TREASUR ", " TREASURER ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " TREASURE ", " TREASURER ", d2$TitleTxt2 )
+
+#FINANCE
+d2$TitleTxt2 <- gsub( " FIN ", " FINANCE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " FINA ", " FINANCE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " FINAN ", " FINANCE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " FINANC ", " FINANCE ", d2$TitleTxt2 )
+
+#SENIOR
+d2$TitleTxt2 <- gsub( " SR ", " SENIOR ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SEN ", " SENIOR ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SENI ", " SENIOR ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SENIO ", " SENIOR ", d2$TitleTxt2 )
+
+#Development
+d2$TitleTxt2 <- gsub( " DEV ", " DEVELOPMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " DEVE ", " DEVELOPMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " DEVEL ", " DEVELOPMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " DEVELO ", " DEVELOPMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " DEVELOP ", " DEVELOPMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " DEVELOPM ", " DEVELOPMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " DEVELOPME ", " DEVELOPMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " DEVELOPMEN ", " DEVELOPMENT ", d2$TitleTxt2 )
+
+#VICE CHAIR
+d2$TitleTxt2 <- gsub( " V C ", " VICE CHAIR ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " VC ", " VICE CHAIR ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " V CHAIR ", " VICE CHAIR ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " VICE C ", " VICE CHAIR ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " CHAIRPERSON ", " CHAIR ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " CHAIRWOMAN ", " CHAIR ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " CHAIRMAN ", " CHAIR ", d2$TitleTxt2 )
+
+#Condense Abbreviations
+d2$TitleTxt2 <- gsub( " C E O ", " CEO ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " C O O ", " COO ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " C F O ", " CFO ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " C D O ", " CDO ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " C T O ", " CTO ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " C A O ", " CAO ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " C I O ", " CIO ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " C R N A ", " CRNA ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " C N O ", " CNO ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " C M O ", " CMO ", d2$TitleTxt2 )
+
+
+#EXECUTIVE DIRECTOR
+
+d2$TitleTxt2 <- gsub( " E D ", " EXECUTIVE DIRECTOR ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " E DIRECTOR ", " EXECUTIVE DIRECTOR ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " EXECUTIVE EXECUTIVE ", " EXECUTIVE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " KEY E ", " KEY EMPLOYEE", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " EXECUTIVE DIRECTOR EXECUTIVE DIRECTOR ", " EXECUTIVE DIRECTOR ", d2$TitleTxt2 )
+
+
+# FMR OFCR
+d2$TitleTxt2 <- gsub( " FMR ", " FORMER ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " OFCR ", " OFFICER ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " OFF ", " OFFICER ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " OFFI ", " OFFICER ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " OFFIC ", " OFFICER ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " OFFICE ", " OFFICER ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " OFFICO ", " OFFICER ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " FORNER ", " FORMER ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " BOARD MEMBERDEPT CHAIR ", " BOARD MEMBER DEPT CHAIR ", d2$TitleTxt2 )
+
+#ADMIN
+d2$TitleTxt2 <- gsub( " ADMIN ", " ADMINISTRATION ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADMINI ", " ADMINISTRATION ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADMINIS ", " ADMINISTRATION ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADMINIST ", " ADMINISTRATION ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADMINISTR ", " ADMINISTRATION ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADMINISTRA ", " ADMINISTRATION ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADMINISTRAT ", " ADMINISTRATION ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADMINISTRATI ", " ADMINISTRATION ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADMINISTRATIO ", " ADMINISTRATION ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " ADMINISTRATO ", " ADMINISTRATOR ", d2$TitleTxt2 )
+
+#COORDINATOR
+d2$TitleTxt2 <- gsub( " COOR ", " COORDINATOR ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " COORD ", " COORDINATOR ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " COORDI ", " COORDINATOR ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " COORDIN ", " COORDINATOR ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " COORDINA ", " COORDINATOR ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " COORDINAT ", " COORDINATOR ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " COORDINATO ", " COORDINATOR ", d2$TitleTxt2 )
+
+#STRATEGY
+
+d2$TitleTxt2 <- gsub( " STRAT ", " STRATEGY ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " STRATE ", " STRATEGY ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " STRATEG ", " STRATEGY ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " STRATEGI ", " STRATEGY ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " STRATEGIC ", " STRATEGY ", d2$TitleTxt2 )
+
+#HUMAN RESOURCES
+
+d2$TitleTxt2 <- gsub( " HU ", " HUMAN ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " HUM ", " HUMAN ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " HUMA ", " HUMAN ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " HR ", " HUMAN RESOURCES ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " RES ", " RESOURCES ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " RESO ", " RESOURCES ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " RESOU ", " RESOURCES ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " RESOUR ", " RESOURCES ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " RESOURC ", " RESOURCES ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " RESOURCE ", " RESOURCES ", d2$TitleTxt2 )
+
+
+#MANAGEMENT
+d2$TitleTxt2 <- gsub( " MAN ", " MANAGEMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " MANA ", " MANAGEMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " MANAG ", " MANAGEMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " MANAGE ", " MANAGEMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " MANAGE ", " MANAGEMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " MANAGEM ", " MANAGEMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " MANAGEME ", " MANAGEMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " MANAGEMEN ", " MANAGEMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " MANAGI ", " MANAGING ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " MANAGIN ", " MANAGING ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " MGMT ", " MANAGEMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " MGM ", " MANAGEMENT ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " MANGER ", " MANAGER ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " MGR ", " MANAGER ", d2$TitleTxt2 )
+             
+
+#PROGRAM
+d2$TitleTxt2 <- gsub( " PROG ", " PROGRAM ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PROGR ", " PROGRAM ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PROGRA ", " PROGRAM ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PROGRAMS ", " PROGRAM ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " PROJ ", " PROJECT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PROJE ", " PROJECT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PROJEC ", " PROJECT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PROJECTS ", " PROJECT ", d2$TitleTxt2 )
+
+#NA
+d2$TitleTxt2[d2$TitleTxt2 == " N A "] <- NA
+d2$TitleTxt2[d2$TitleTxt2 == " NA "] <- NA
+
+#PUBLIC
+d2$TitleTxt2 <- gsub( " PUB ", " PUBLIC ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PUBL ", " PUBLIC ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PUBLI ", " PUBLIC ", d2$TitleTxt2 )
+
+#BUSINESS
+d2$TitleTxt2 <- gsub( " BUS ", " BUSINESS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " BUSI ", " BUSINESS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " BUSI ", " BUSINESS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " BUSIN ", " BUSINESS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " BUSINE ", " BUSINESS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " BUSINES ", " BUSINESS ", d2$TitleTxt2 )
+
+#HUMAN RESOURCES
+d2$TitleTxt2 <- gsub( " HR ", "  HUMAN RESOURCES ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " H R ", "  HUMAN RESOURCES ", d2$TitleTxt2 )
+
+# COMMUNICATIONS
+d2$TitleTxt2 <- gsub( " COM ", "  COMMUNICATIONS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " COMM ", "  COMMUNICATIONS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " COMMU ", "  COMMUNICATIONS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " COMMUN ", "  COMMUNICATIONS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " COMMUNI ", "  COMMUNICATIONS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " COMMUNIC ", "  COMMUNICATIONS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " COMMUNICA ", "  COMMUNICATIONS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " COMMUNICAT ", "  COMMUNICATIONS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " COMMUNICATI ", "  COMMUNICATIONS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " COMMUNICATIO ", "  COMMUNICATIONS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " COMMUNICATION ", "  COMMUNICATIONS ", d2$TitleTxt2 )
+
+#INFORMATION
+d2$TitleTxt2 <- gsub( " INF ", "  INFORMATION ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " INFO ", "  INFORMATION ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " INFOR ", "  INFORMATION ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " INFORM ", "  INFORMATION ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " INFORMA ", "  INFORMATION ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " INFORMAT ", "  INFORMATION ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " INFORMATI ", "  INFORMATION ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " INFORMATIO ", "  INFORMATION ", d2$TitleTxt2 )
+
+
+#INTELLIGENCE
+d2$TitleTxt2 <- gsub( " INT ", "  INTELLIGENCE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " INTE ", "  INTELLIGENCE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " INTEL ", "  INTELLIGENCE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " INTELL ", "  INTELLIGENCE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " INTELLI ", "  INTELLIGENCE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " INTELLIG ", "  INTELLIGENCE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " INTELLIGE ", "  INTELLIGENCE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " INTELLIGENC ", "  INTELLIGENCE ", d2$TitleTxt2 )
+
+#TECHNOLOGY
+d2$TitleTxt2 <- gsub( " TECH ", "  TECHNOLOGY ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " TECHN ", "  TECHNOLOGY ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " TECHNO ", "  TECHNOLOGY ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " TECHNOL ", "  TECHNOLOGY ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " TECHNOLO ", "  TECHNOLOGY ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " TECHNOLOG ", "  TECHNOLOGY ", d2$TitleTxt2 )
+
+#INSTITUTION
+d2$TitleTxt2 <- gsub( " INST ", "  INSTITUTION ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " INSTI ", "  INSTITUTION ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " INSTIT ", "  INSTITUTION ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " INSTITU ", "  INSTITUTION ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " INSTITUT ", "  INSTITUTION ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " INSTITUTI ", "  INSTITUTION ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " INSTITUTIO ", "  INSTITUTION ", d2$TitleTxt2 )
+
+#ACADEMIC
+d2$TitleTxt2 <- gsub( " ACAD ", "  ACADEMICS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ACADE ", "  ACADEMICS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ACADEM ", "  ACADEMICS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ACADEMI ", "  ACADEMICS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ACADEMIC ", "  ACADEMIC ", d2$TitleTxt2 )
+
+#MARKETING
+d2$TitleTxt2 <- gsub( " MARK ", " MARKETING ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " MARKE ", " MARKETING ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " MARKET ", " MARKETING ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " MARKETI ", " MARKETING ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " MARKETIN ", " MARKETING ", d2$TitleTxt2 )
+
+#ADVANCEMENT
+d2$TitleTxt2 <- gsub( " ADV ", " ADVANCEMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADVA ", " ADVANCEMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADVAN ", " ADVANCEMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADVANC ", " ADVANCEMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADVANCE ", " ADVANCEMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADVANCEM ", " ADVANCEMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADVANCEME ", " ADVANCEMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADVANCEMEN ", " ADVANCEMENT ", d2$TitleTxt2 )
+
+# PHILANTHROPY
+d2$TitleTxt2 <- gsub( " PHIL ", " PHILANTHROPY ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PHILA ", " PHILANTHROPY ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PHILAN ", " PHILANTHROPY ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PHILANT ", " PHILANTHROPY ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PHILANTH ", " PHILANTHROPY ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PHILANTHR ", " PHILANTHROPY ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PHILANTHRO ", " PHILANTHROPY ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PHILANTHROP ", " PHILANTHROPY ", d2$TitleTxt2 )
+
+#SYSTEMS
+d2$TitleTxt2 <- gsub( " SYS ", " SYSTEMS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SYST ", " SYSTEMS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SYSTE ", " SYSTEMS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SYSTEM ", " SYSTEMS ", d2$TitleTxt2 )
+
+#GENERAL
+d2$TitleTxt2 <- gsub( " GENL ", " GENERAL ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " GEN ", " GENERAL ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " GENE ", " GENERAL ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " GENER ", " GENERAL ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " GENERA ", " GENERAL ", d2$TitleTxt2 )
+
+#PLANNING
+d2$TitleTxt2 <- gsub( " PLAN ", " PLANNING ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PLANN ", " PLANNING ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PLANNI ", " PLANNING ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PLANNIN ", " PLANNING ", d2$TitleTxt2 )
+
+#COMPLIANCE
+d2$TitleTxt2 <- gsub( " COMPL ", " COMPLIANCE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " COMPLI ", " COMPLIANCE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " COMPLIA ", " COMPLIANCE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " COMPLIAN ", " COMPLIANCE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " COMPLIANC ", " COMPLIANCE ", d2$TitleTxt2 )
+
+#ENROLLMENT
+d2$TitleTxt2 <- gsub( " ENROL ", " ENROLLMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ENROLL ", " ENROLLMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ENROLLM ", " ENROLLMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ENROLLME ", " ENROLLMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ENROLLMEN ", " ENROLLMENT ", d2$TitleTxt2 )
+
+#ADMISSIONS
+d2$TitleTxt2 <- gsub( " ADMIS ", " ADMISSIONS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADMISS ", " ADMISSIONS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADMISS ", " ADMISSIONS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADMISS ", " ADMISSIONS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADMISS ", " ADMISSIONS ", d2$TitleTxt2 )
+
+#ADVANCEMENT
+d2$TitleTxt2 <- gsub( " ADVANCEMNT ", " ADVANCEMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADVANCEMNT ", " ADVANCEMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADVANCMNT ", " ADVANCEMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADVNCMNT ", " ADVANCEMENT ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " SECY ", " SECRETARY ", d2$TitleTxt2 )
+
+
+```
+
+### Removes Stop Words
+
+```{r}
+# PARTIAL YEAR
+d2$TitleTxt2 <- gsub( " THRU ", "", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " FROM ", "", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " UNTIL ", "", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " THROUGH ", "", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " BEG ", "", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " LEFT ", "", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ENDED ", "", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " TERM ", "", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " TIL ", "", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " THR ", "", d2$TitleTxt2 )
+
+# CONJUNCTION WORDS 
+d2$TitleTxt2 <- gsub( " TO ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " OF ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " FOR ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " AND ", " ", d2$TitleTxt2 )
+
+```
+
+
+### Remove Months
+```{r}
+# PARTIAL YEAR
+d2$TitleTxt2 <- gsub( " JANUARY ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " JAN ", "", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " FEBUARY ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " FEB ", " ", d2$TitleTxt2 )
+
+
+d2$TitleTxt2 <- gsub( " MARCH ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " APRIL ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " MAY ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " JUNE ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " JULY ", " ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( "AUGUST", " ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " SEPTEMBER ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SEP ", "", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " OCTOBER ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " OCT ", "", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " NOVEMBER ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " NOV ", "", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( "DECEMBER", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " DEC ", "", d2$TitleTxt2 )
+
+
+# CONJUNCTION WORDS 
+d2$TitleTxt2 <- gsub( " TO ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " OF ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " FOR ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " AND ", " ", d2$TitleTxt2 )
+
+
+```
+### MISSPELLING 5 letters or Longer
+
+```{r}
+d2$TitleTxt3 <- d2$TitleTxt2
+
+
+Parsed <- hunspell_parse( d2$TitleTxt3 )
+allwords <- unlist( Parsed )
+checked <- hunspell_check( allwords )
+Mispellings <- allwords[!checked]
+
+
+Mispellings.4 <- Mispellings[str_length( Mispellings ) > 4]
+
+Mispellings.4 %>% length
+
+Mispellings.4 <- Mispellings.4[grepl( "[^aeiou]+", Mispellings.4 )]
+
+
+#Suggested <- hunspell_suggest( Mispellings.4[1:25] )
+
+
+Most_MS <- table( Mispellings.4 ) %>% sort( decreasing=T ) %>% as.data.frame( )
+Most_MS <- table( Mispellings.4 ) %>% sort( decreasing=T ) %>% as.data.frame( )
+
+# Most Common Mis Spellings
+
+d2$TitleTxt2 <- gsub( " OFFICIO ", " OFFICER ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " CHEIF ", " CHEIF ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " STRAT ", " STRATEGY ", d2$TitleTxt2 )
+
+
+
+d2$TitleTxt2 <- gsub( " EXCUTIVE ", " EXECUTIVE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " MANAG ", " MANAGEMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SRVCS ", " SERVICE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADMINSTRATOR ", " ADMINISTRATOR ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " EXECTIVE ", " EXECUTIVE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SERVI ", " SERVICE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SERVIC ", " SERVICE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " DIRECTR ", " DIRECTOR ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PRACTIONER ", " PRACTITIONER  ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " DIRC ", " DIRECTOR ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " SUPERINTENDE ", " SUPERINTENDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " COMMUN ", " COMMUNICATIONS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADVANCEME ", " ADVANCEMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " COORD ", " COORDINATOR ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " EXECDIR ", " EXECUTIVE DIRECTOR ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " OFFCR ", " OFFICER ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PRACT ", " PRACTITIONER ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SECTY ", " SECRETARY ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " AFFAI ", " AFFAIRS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PRESIDENTCEO ", " PRESIDENT CEO ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " RELAT ", " RELATIONS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " RESOUR ", " RESOURCES ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PRACTI ", " PRACTITIONER ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " EXCECUTIVE ", " EXECUTIVE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " EXCE ", " EXECUTIVE ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " DVLPMT ", " DEVELOPMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADVAN ", " ADVANCEMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PROGR ", " PROGRAMS ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " INNOV ", " INNOVATION ", d2$TitleTxt2 )
+```
+
+
+### MISSPELLING 3-4 letters Long
+
+
+```{r}
+
+Mispellings.3 <- Mispellings[str_length( Mispellings ) <= 4 & str_length( Mispellings ) >=3]
+Most_MS <- table( Mispellings.3 ) %>% sort( decreasing=T ) %>% as.data.frame( )
+
+#REMOVES C SUITE
+Non.CSuite.MS <- Most_MS[str_sub( Most_MS$Mispellings.3, 1, 1 ) != "C" | str_length( Most_MS$Mispellings.3 ) != 3,]
+
+d2$TitleTxt2 <- gsub( " SVCS ", " SERVICE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SERV ", " SERVICE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SVC ", " SERVICE ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " SCHO ", " SCHOOL ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " MKTG ", " MARKETING ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SYS ", " SYSTEM ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " DEP ", " DEPUTY ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " AFF ", " AFFAIRS ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " MGT ", " MANAGEMENT ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " MEM ", " MEMBER ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " CLIN ", " CLINICAL ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PRE ", " PRESIDENT ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " SRVP ", " SENIOR VICE PRESIDENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ACAD ", " ACADEMIC ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " HLTH ", " HEALTH ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADMI ", " ADMINISTRATION ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " MKT ", " MARKETING ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " SVS ", " SERVICES ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " PHY ", " PHYSICIAN ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " COUN ", " COUNSEL ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SURG ", " SURGEON ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SER ", " SERVICE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " CHRO ", " CHIEF HUMAN RESOURCES OFFICER ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " EMP ", " EMPLOYEE ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " FAC ", " FACULTY ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " MIS ", " MANAGEMENT INFORMATION SYSTEMS ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " EDU ", " EDUCATION ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " MBR ", " MEMBER ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " TRES ", " TREASURER ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " FDN ", " FOUNDATION ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " ARNP ", " ADVANCED NURSE PRACTITIONER ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " OFC ", " OFFICER ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " PRGM ", " PROGRAM ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SNR ", " SENIOR ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " INTL ", " INTELLIGENCE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " MNGR ", " MANAGER ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " AST ", " ASSITANT ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " DTR ", " DIRECTOR ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " QUAL ", " QUALITY ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " BRD ", " BOARD ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " SRVS", " SERVICE ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " LTC ", " LONG TERM CARE ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " PRIN ", " PRINCIPAL ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SRV ", " SERVICE ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " AED ", " ASSISTANT EXECUTIVE DIRECTOR ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " INV ", " INNOVATION ", d2$TitleTxt2 ) 
+
+d2$TitleTxt2 <- gsub( " AMB ", " AMBULANCE ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " PHAR ", " PHARMACY ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " EDUC ", " EDUCATION ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " FRMR ", " FORMER ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " EVAL ", " EVALUATION ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " FAM ", " FAMILY ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " MEMB ", " MEMBER ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PRG ", " PROGRAM ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " ASSC", " ASSOCIATE ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " ASSO ", " ASSOCIATE ", d2$TitleTxt2 )
+
+
+
+d2$TitleTxt2 <- gsub( " PERF ", " PERFORMANCE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " GRP ", " GROUP ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " NURS ", " NURSE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADMN ", " ADMINISTRATION ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " CFAO ", " CHIEF ACCOUNTING AND FINANCIAL OFFICER ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SUPV ", " SUPERVISON ", d2$TitleTxt2 )
+
+
+
+d2$TitleTxt2 <- gsub( " CMIO ", " CHIEF MEDICAL INFORMATICS OFFICER ", d2$TitleTxt2 )
+
+
+
+
+d2$TitleTxt2 <- gsub( " PRAC ", " PRACTICE ", d2$TitleTxt2 )
+
+
+d2$TitleTxt2 <- gsub( " INIT ", " INITATIVES ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " MNG ", " MANAGEMENT ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " EMPL ", " EMPLOYEE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PGM ", " PROGRAM ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " PLNG ", " PLANNING ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ASSI ", " ASSISTANT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " CNSL ", " COUNSEL ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ACC ", " ACCOUNTING ", d2$TitleTxt2 ) 
+
+d2$TitleTxt2 <- gsub( " DON ", " DIRECTOR OF NURSING ", d2$TitleTxt2 ) 
+
+d2$TitleTxt2 <- gsub( " SCH ", " SCHOOL ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " SCHL ", " SCHOOL ", d2$TitleTxt2 ) 
+
+
+d2$TitleTxt2 <- gsub( " ES ", " ELEMENTARY SCHOOL ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " MS ", " MIDDLE SCHOOL ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " HS ", " HIGH SCHOOL ", d2$TitleTxt2 )
+```
+
+### MISSPELLING 2 letters Long
+
+```{r}
+Mispellings.2 <- Mispellings[str_length( Mispellings ) == 2]
+
+Most_MS <- table( Mispellings.2 ) %>% sort( decreasing=T ) %>% as.data.frame( )
+
+d2$TitleTxt2 <- gsub( " BD ", " BOARD ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " EE ", " EMPLOYEE ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " KEY ", " EMPLOYEE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " EMPLOYEE EMPLOYEE ", " KEY EMPLOYEE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " SV ", " SERVICES ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " TR ", " TREASURER ", d2$TitleTxt2 ) 
+
+```
+
+```{r}
+VP.TEST<-d2$TitleTxt2[grepl( " VICE PRESIDENT ", d2$TitleTxt2)]
+
+VP.Parsed <- hunspell_parse( VP.TEST )
+VP.words <- unlist( VP.Parsed )
+
+checked.VP <- hunspell_check( VP.words )
+Mispellings.VP <- VP.words[!checked.VP]
+
+d2$TitleTxt2 <- gsub( " ADV ", " ADVANCEMENT ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " ADVA ", " ADVANCEMENT ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " ADVAN ", " ADVANCEMENT ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " ADVANC ", " ADVANCEMENT ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " ADVANCE ", " ADVANCEMENT ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " ADVANCEM ", " ADVANCEMENT ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " ADVANCEME ", " ADVANCEMENT ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " ADVANCEMEN ", " ADVANCEMENT ", d2$TitleTxt2 ) 
+
+
+
+d2$TitleTxt2 <- gsub( " INSTI ", " INSTITUTIONAL ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " INSTITU ", " INSTITUTIONAL ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " INSTITUT ", " INSTITUTIONAL ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " INSTITUTI ", " INSTITUTIONAL ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " INSTITUTIO ", " INSTITUTIONAL ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " INSTITUTIONA ", " INSTITUTIONAL ", d2$TitleTxt2 ) 
+
+d2$TitleTxt2 <- gsub( " LDRSHIP ", " LEADERSHIP ", d2$TitleTxt2 ) 
+
+d2$TitleTxt2 <- gsub( " REDITATION ", " RADIATION ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " OUNTING ", " ACCOUNTING ", d2$TitleTxt2 ) 
+
+d2$TitleTxt2 <- gsub( " DVLPMNT ", " DEVELOPMENT ", d2$TitleTxt2 ) 
+
+
+d2$TitleTxt2 <- gsub( " ENROL ", " ENROLLMENT ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " ENROLL ", " ENROLLMENT ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " ENROLLM ", " ENROLLMENT ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " ENROLLME ", " ENROLLMENT ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " ENROLLMEN ", " ENROLLMENT ", d2$TitleTxt2 ) 
+
+
+d2$TitleTxt2 <- gsub( " PRGMS ", " PROGRAMS ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " AFFIARS ", " AFFAIRS ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " MKTING ", " MARKETING ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " AMBUL ", " AMBULANCE ", d2$TitleTxt2 ) 
+
+
+d2$TitleTxt2 <- gsub( " COUNS ", " COUNSEL ", d2$TitleTxt2 ) 
+
+d2$TitleTxt2 <- gsub( " CHF ", " CHIEF ", d2$TitleTxt2 ) 
+
+d2$TitleTxt2 <- gsub( " DVLP ", " DEVELOPMENT ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " TECHNOLO ", " TECHNOLOGY ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " ASSITANT ", " ASSISTANT ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " INFORMATI ", " INFORMATION ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " CHF ", " CHIEF ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " CHF ", " CHIEF ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " CHF ", " CHIEF ", d2$TitleTxt2 ) 
+d2$TitleTxt2 <- gsub( " CHF ", " CHIEF ", d2$TitleTxt2 ) 
+
+
+d2$TitleTxt2 <- gsub( " MKTNG ", " MARKETING ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " QLTY ", " QUALITY ", d2$TitleTxt2 ) 
+
+d2$TitleTxt2 <- gsub( " SPONS ", " SPONSOR ", d2$TitleTxt2 ) 
+
+d2$TitleTxt2 <- gsub( " INITATIVES ", " INITIATIVES ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " MNGT ", " MANGEMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " MRKTG ", " MARKETING ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " OFFR ", " OFFICER ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " ADVA ", " ADVANCEMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " MARKE ", " MARKETING ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " MGMNTSVCES ", " MANAGEMENT SERVICES ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " DEVELOPMT ", " DEVELOPMENT ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " CHEIF ", " CHIEF ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " RESEARC ", " RESEARCH ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " NUR ", " NURSE ", d2$TitleTxt2 )
+
+
+
+
+d2$TitleTxt2 <- gsub( " ASSTSEC ", " ASSISTANT SECRETARY ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " STATEGY ", " STRATEGY ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " SERVS ", " SERVICES ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " AFFARIS ", " AFFAIRS ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " OPEARTIONS ", " OPERATIONS ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " MEDICA ", " MEDICAL ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " RSRCH ", " RESEARCH ", d2$TitleTxt2 )
+
+
+
+
+d2$TitleTxt2 <- gsub( " SRVC ", " SERVICE ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " COUNSE ", " COUNSEL ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " COUNS ", " COUNSEL ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( " COUN ", " COUNSEL ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " FINACIAL ", " FINANCIAL ", d2$TitleTxt2 )
+
+d2$TitleTxt2 <- gsub( " EXECDIRECTOR ", " EXECUTIVE DIRECTOR ", d2$TitleTxt2 )
+              
+d2$TitleTxt2[grepl( " EX DIRECTOR ", d2$TitleTxt2 ) & d2$Officer == 1 & d2$FmrOfficer == 0] <- gsub(" EX DIRECTOR ", " EXECUTIVE DIRECTOR ", d2$TitleTxt2)[grepl( " EX DIRECTOR ", d2$TitleTxt2 ) & d2$Officer == 1 & d2$FmrOfficer == 0]
+
+d2$TitleTxt2 <- str_c( " ",d2$TitleTxt2 )
+d2$TitleTxt2 <- str_c( d2$TitleTxt2," " )
+
+d2$TitleTxt2 <- gsub( "  ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( "  ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( "  ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( "  ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( "  ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( "  ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( "  ", " ", d2$TitleTxt2 )
+d2$TitleTxt2 <- gsub( "  ", " ", d2$TitleTxt2 )
+
+```
+
+# Creating Catagories
+
+## Create Catagories  {.tabset}
+
+Creating Catagoies for the titles of Non-profit employees listed on 501c3s was accomplished in the following steps.
+
+1. Identify the **Most Common Titles** in the Data.
+2. Identify and Define **Catagogies** for sorting titles based off this frame
+3. **Random Sample** Titles and organizations to check the validity of Catagories, and see if new catagories need to be created.
+4. **Descriptive Statistics** For Catagories
+
+### Most Common Titles 
+
+When developing catagories and hand coding titles its important to understand the costs and benefits of this process. Initial exploration of the dataset found that the 100 Most common titles account for roughly 53.05% of all titles. The next 1000 most common titles accounts for 67% of all titles. This suggests there is some diminishing returns for 
+increasing the number of titles we use to form our initial catagories. As it takes about an hour to assign 100 titles to catagories, its important to optimize the cost and benefit of including more catagories in our initial conceptualization.
+
+1. Cost Benefit analysis
+
+```{r}
+#
+
+titles <- d2$TitleTxt2
+Total_Unique_Titles <- length( unique( titles ) )
+
+
+# Move by 100 to check diminishing returns on Top Titles coding
+test <- c( 1:10 )
+for ( i in 1:10 ){
+ii <- i*100
+x <- table( titles ) %>% sort( decreasing=T ) %>% as.data.frame( )
+test[i] <-  x$Freq[1:ii] %>% sum
+}
+
+dim.return.100 <- cbind( ( 1:10 )*100,test )
+dim.return.100 <- cbind( dim.return.100, round( dim.return.100[,2] / nrow( d2 ), digits = 4 )*100 )
+dim.return.100 <- cbind( dim.return.100, dim.return.100[,2] - lag( dim.return.100[,2] ) )
+dim.return.100 <- cbind( dim.return.100, dim.return.100[,3] - lag( dim.return.100[,3] ) )
+colnames( dim.return.100 ) <- c( "Titles", "Obs", "%", "Gain","% Gain" )
+
+dim.return.100[1,4] <- dim.return.100[1,2]
+dim.return.100[1,5] <- dim.return.100[1,3]
+
+Titles_1000 <- table( titles ) %>% sort( decreasing=T ) %>% as.data.frame( ) %>% head( 1000 )
+
+Titles_1000_sum  <- Titles_1000$Freq %>% sum
+
+# Move by 1000 to check diminishing returns on Top Titles coding
+test <- c( 1:10 )
+for ( i in 1:10 ){
+ii <- i*1000
+x <- table( titles ) %>% sort( decreasing=T ) %>% as.data.frame( )
+test[i] <-  x$Freq[1:ii] %>% sum
+}
+
+dim.return.1000 <- cbind( ( 1:10 )*1000,test )
+dim.return.1000 <- cbind( dim.return.1000, round( dim.return.1000[,2] / nrow( d2 ), digits = 4 )*100 )
+dim.return.1000 <- cbind( dim.return.1000, dim.return.1000[,2] - lag( dim.return.1000[,2] ) )
+dim.return.1000 <- cbind( dim.return.1000, dim.return.1000[,3] - lag( dim.return.1000[,3] ) )
+colnames( dim.return.1000 ) <- c( "Titles", "Obs", "%", "Gain","% Gain" )
+dim.return <- dim.return.100 %>% rbind( dim.return.1000 )
+dim.return[-11,]%>%pander
+
+```
+
+This suggests that that getting the first 100 most common Titles by far allows us to capture 53% of all titles observations. While Coding The next 100 observations only gets us 4.65% more observations. And clearly coding more than 1000 observations is a losing proposition.
+
+```{r}
+
+Titles_100 <- table( titles ) %>% sort( decreasing=T ) %>% as.data.frame( ) %>% head( 100 )
+
+Titles_100_sum  <- Titles_100$Freq %>% sum
+
+cat( "The top 100 titles include ", 
+    round( Titles_100_sum / nrow( d2 ), digits = 4 )*100,"% of all titles" )
+write.csv( Titles_100, "Data/Top 100 Titles.csv", row.names=F )
+```
+
+2. 100 Most Common Titles
+
+```{r, fig.cap = "100 Most Common Titles"}
+Titles_name_100 <- Titles_100$titles %>% as.vector( )
+
+res <- cbind.data.frame( split( Titles_name_100, rep( 1:20, times=5 ) ), stringsAsFactors=F )
+res <- t( res ) %>% as.data.frame( )
+colnames( res ) <-  c( "Top 1-20","Top 21-40","Top 41-60","Top 61-80","Top 81-100" )
+knitr::kable( res )
+
+```
+
+3. Create List of Titles for 101 - 1000 most common titles [By 100]
+
+```{r}
+
+Titles_1000 <- table( titles ) %>% sort( decreasing=T ) %>% as.data.frame( ) %>% head( 1000 )
+
+
+Titles_200 <- Titles_1000[101:200,]
+Titles_300 <- Titles_1000[201:300,]
+Titles_400 <- Titles_1000[301:400,]
+Titles_500 <- Titles_1000[401:500,]
+Titles_600 <- Titles_1000[501:600,]
+Titles_700 <- Titles_1000[601:700,]
+Titles_800 <- Titles_1000[701:800,]
+Titles_900 <- Titles_1000[801:900,]
+Titles_1000 <- Titles_1000[901:1000,]
+
+write.csv( Titles_200,  "Data/Most Common 101-200.csv", row.names=F )
+write.csv( Titles_300,  "Data/Most Common 201-300.csv", row.names=F )
+write.csv( Titles_400,  "Data/Most Common 301-400.csv", row.names=F )
+write.csv( Titles_500,  "Data/Most Common 401-500.csv", row.names=F )
+write.csv( Titles_600,  "Data/Most Common 501-600.csv", row.names=F )
+write.csv( Titles_700,  "Data/Most Common 601-700.csv", row.names=F )
+write.csv( Titles_800,  "Data/Most Common 701-800.csv", row.names=F )
+write.csv( Titles_900,  "Data/Most Common 801-900.csv", row.names=F )
+write.csv( Titles_1000, "Data/Most Common 901-1000.csv", row.names=F )
+```
+### Title Catagories
+
+By law every organization is required to have at least 4 positions filled:
+
+Top Management Official
+Top Financial Official
+Secretary
+
+Our current catagories are as follows:
+
+* CEO	
+
+* CFO
+
+* Treasurer
+
+* Deputy CEO	
+
+* Secretary	
+
+* COO	
+
+* Director/Trustee	
+
+* Human Resources
+
+* Communications
+
+* Department Head	
+
+* Management	
+
+* Technology/Information
+
+* Development	
+
+* Other	Individual Positions
+
+```{r}
+Titles_200 <- Titles_1000[101:200,]
+Titles_300 <- Titles_1000[201:300,]
+Titles_400 <- Titles_1000[301:400,]
+Titles_500 <- Titles_1000[401:500,]
+Titles_600 <- Titles_1000[501:600,]
+Titles_700 <- Titles_1000[601:700,]
+Titles_800 <- Titles_1000[701:800,]
+Titles_900 <- Titles_1000[801:900,]
+Titles_1000 <- Titles_1000[901:1000,]
+
+
+```
+
+### Samples of Titles
+
+We took 2 approaches to sampling random titles, the first approach was to take 100 random organizations. The second approach was to take a sample of 1000 random titles regardless of the organization. The goal is to get a good mix of common titles and uncommon titles, as this lets us test the flexibility and robustness of the categories.
+
+1. Sample of Titles of 100 Organizations
+
+```{r}
+set.seed( 99 )
+unique.ein <- d2$FilerEIN %>% unique 
+i <- length( unique.ein )
+ii <- sample( unique.ein, size = 100, replace = FALSE )
+
+ein.sample <- d2[d2$FilerEIN %in% ii, ]
+cat( "\nDimensions of the sample:", dim( ein.sample ), "[Rows X Columns] \n" )
+
+ein.sample$top100 <- 0
+ein.sample$top100[ein.sample$TitleTxt %in% Titles_name_100] <- 1
+cat( "Number of titles in the sample in the top 100 Titles: ", sum( ein.sample$top100 ), "\n" )
+cat( "Percentage of titles in the sample in the top 100 Titles: ", signif( sum( ein.sample$top100 )/nrow( ein.sample ), 3 ), "%\n" )
+ein.sample.no100 <- ein.sample %>% filter ( top100 == 0 )
+titles.2 <- ein.sample.no100$TitleTxt %>% unique
+
+write.csv( titles.2, "Data/Organization Sample.csv", row.names = F )
+
+Org100.gen.Table <- d2$TitleTxt[d2$TitleTxt %in% as.character( titles.2 )] %>% table( ) %>% sort( decreasing=T ) %>% as.data.frame( )  %>% filter( Freq >20 )
+colnames( Org100.gen.Table )[1] <- "Titles"
+Org100.gen.Table %>% head(20) %>% pander
+Org100.gen.Table[,2] %>% sum
+
+
+```
+
+2. Sample of 1000 Titles
+
+```{r}
+set.seed( 12 )
+
+d2.sample <- sample_n( d2, size = 1000, replace = FALSE )
+
+cat( "\nDimensions of the sample: ", dim( d2.sample ), "[Rows X Columns] \n" )
+
+d2.sample$top100 <- 0
+d2.sample$top100[d2.sample$TitleTxt %in% Titles_name_100] <- 1
+d2.sample$Org100 <- 0
+d2.sample$Org100[d2.sample$TitleTxt %in% titles.2] <- 1
+
+cat( "Number of titles in the sample in the top 100 Titles: ", sum( d2.sample$top100 ), "\n" )
+cat( "Percentage of titles in the sample in the top 100 Titles: ", sum( d2.sample$top100 )/nrow( d2.sample ), "%\n" )
+
+d2.sample.no100 <- d2.sample %>% filter ( top100 == 0 & Org100 == 0 )
+
+#Checks the generalizablity of the sample.
+Top.Titles.sample <- table( d2.sample.no100$TitleTxt ) %>% sort( decreasing=T ) %>% as.data.frame( )
+sample.gen.Table <- d2$TitleTxt[d2$TitleTxt %in% as.character( Top.Titles.sample[,1] )] %>% table( ) %>% sort( decreasing=T ) %>% as.data.frame( )  %>% filter( Freq >1 )
+colnames( sample.gen.Table )[1] <- "Titles"
+sample.gen.Table %>% head(20) %>% pander
+sample.gen.Table[,2] %>% sum
+
+titles.3 <- d2.sample.no100$TitleTxt %>% unique
+write.csv( titles.3, "Data/Title Sample.csv", row.names = F )
+```
+
+
+# Save Data
+```{r}
+saveRDS( d2, "Data/cleaned-titles.rds")
+```
+

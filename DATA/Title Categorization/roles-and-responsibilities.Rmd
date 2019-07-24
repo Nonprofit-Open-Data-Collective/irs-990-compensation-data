@@ -1,0 +1,248 @@
+---
+title: "Roles and Responsibilities"
+author: "David Selby"
+date: "7/9/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set( echo = TRUE, message=F, warning=F, cache = F )
+```
+
+## Required Packages
+```{r}
+require( dplyr )
+require( pander )
+require( stringr )
+require( hunspell )
+
+```
+
+
+## Load Data
+
+```{r}
+d2 <- readRDS( "Data/categorized-titles.rds")
+
+```
+
+
+##  Seperates Roles and Responsiblities
+
+Find the Most Common Words that Indicate Role
+
+1. Address executive titles
+2. Seperate unambigious roles from responsibilities
+3. Seperate ambigious roles from responsibilities using logical opperators
+4. Clean up Extra Spaces
+5. Check 25 Random Titles
+
+
+
+
+```{r}
+Role.Dictionary <-  c(
+" PAST ", " FORMER ", " INTERIM ", " SENIOR ", " DIRECTOR ", " DEPUTY ", " TRUSTEE ", " MANAGER "," MGR ", " MANAGEMENT ", " HEAD ", " COORDINATOR ", " CO ", " TRUSTEE ", " SENIOR VICE PRESIDENT ", " EXECUTIVE VICE ", " DEAN ", " ASSISTANT ", " ASSOCIATE ", " EXECUTIVE VICE PRESIDENT ", " VICE ", " ASSOCIATE ", " SUPERVISING ", " PRESIDENT ", " HEAD_START ")
+Role.Dictionary
+```
+
+## Executive titles
+
+Title                        Role              Responsibility
+-----------------------     ----------------   ----------------
+Chief Executive OFFicer      Chief Officer      Cheif Executive Officer
+CEO                          Chief Officer      CEO
+Chief Finiancial Officer     Chief Officer      Chief Finiancial Officer
+CFO                          Chief Officer      CFO
+
+
+```{r}
+d2$TitleRole <- "  "
+d2$TitleResp <- d2$TitleTxt2
+
+d2$TitleResp <- str_c( " ",d2$TitleResp )
+d2$TitleResp <- str_c( d2$TitleResp," " )
+
+# REPLACE
+# d2$TitleResp <- gsub( " VICE PRESIDENT ", " VICE#PRESIDENT ", d2$TitleResp )
+# d2$TitleResp <- gsub( " EXECUTIVE DIRECTOR ", " EXECUTIVE_DIRECTOR ", d2$TitleResp )
+# d2$TitleResp <- gsub( " HEAD START ", " HEAD_START ", d2$TitleResp )
+
+#Chief Executive
+d2$TitleRole[ grepl( " CHIEF ", d2$TitleResp ) & grepl( " EXECUTIVE ", d2$TitleResp ) ] <- " CHIEF EXECUTIVE "
+d2$TitleRole[ grepl( " CHIEF ", d2$TitleResp ) & grepl( " OFFICER ", d2$TitleResp ) ] <- " CHIEF OFFICER "
+d2$TitleRole[ grepl( " CHIEF ", d2$TitleResp ) & !grepl( " OFFICER ", d2$TitleResp ) ] <- " CHIEF "
+d2$TitleResp[ grepl( " CHIEF ", d2$TitleResp ) & !grepl( " OFFICER ", d2$TitleResp ) ] <- (gsub( " CHIEF ", " ", d2$TitleResp))[ grepl( " CHIEF ", d2$TitleResp ) & !grepl( " OFFICER ", d2$TitleResp ) ]
+
+d2$TitleRole[ grepl( " C[A-Z]O ", d2$TitleResp) ] <- " CHIEF OFFICER "
+
+#EXECUTIVE DIRECTOR
+d2$TitleRole[ grepl( " EXECUTIVE DIRECTOR ", d2$TitleResp ) ] <- paste(d2$TitleRole, " EXECUTIVE DIRECTOR ", sep ="")[ grepl( " EXECUTIVE DIRECTOR ", d2$TitleResp ) ]
+d2$TitleResp <- gsub( "EXECUTIVE DIRECTOR ", " ", d2$TitleResp)
+```
+
+
+
+## Clear Titles
+
+```{r}
+#PAST
+d2$TitleRole[ grepl( " PAST ", d2$TitleResp) ] <- paste(d2$TitleRole, " PAST ", sep ="")[ grepl( " PAST ", d2$TitleResp) ]
+d2$TitleResp <- gsub( "PAST", " ", d2$TitleResp)
+
+#FORMER
+d2$TitleRole[ grepl( " FORMER ", d2$ TitleResp) ] <- paste(d2$TitleRole, " FORMER ", sep ="")[ grepl( " FORMER ", d2$ TitleResp) ]
+d2$TitleResp <- gsub( " FORMER ", " ", d2$TitleResp)
+
+#INTERIM
+d2$TitleRole[ grepl( " INTERIM ", d2$ TitleResp) ] <- paste(d2$TitleRole, " INTERIM ", sep ="")[ grepl( " INTERIM ", d2$ TitleResp) ]
+d2$TitleResp <- gsub( " INTERIM ", " ", d2$TitleResp)
+
+#" CO "
+d2$TitleRole[ grepl( " CO ", d2$ TitleResp) ] <- paste(d2$TitleRole, " CO ", sep ="")[ grepl( " CO ", d2$ TitleResp) ]
+d2$TitleResp <- gsub( " CO ", " ", d2$TitleResp)
+
+d2$TitleRole[ grepl( " FOUNDER ", d2$ TitleResp) ] <- paste(d2$TitleRole, " FOUNDER ", sep ="")[ grepl( " FOUNDER ", d2$ TitleResp) ]
+d2$TitleResp <- gsub( " FOUNDER ", " ", d2$TitleResp)
+
+
+#Executive Senior Vice President
+d2$TitleRole[ grepl( " EXECUTIVE SENIOR VICE PRESIDENT ", d2$ TitleResp) ] <- paste(d2$TitleRole, " EXECUTIVE SENIOR VICE PRESIDENT ", sep ="")[ grepl( " EXECUTIVE SENIOR VICE PRESIDENT ", d2$ TitleResp) ]
+d2$TitleResp <- gsub( " EXECUTIVE SENIOR VICE PRESIDENT ", " ", d2$TitleResp)
+
+#Senior Executive Vice President
+d2$TitleRole[ grepl( " SENIOR EXECUTIVE VICE PRESIDENT ", d2$ TitleResp) ] <- paste(d2$TitleRole, " SENIOR EXECUTIVE VICE PRESIDENT ", sep ="")[ grepl( " SENIOR EXECUTIVE VICE PRESIDENT ", d2$ TitleResp) ]
+d2$TitleResp <- gsub( " SENIOR EXECUTIVE VICE PRESIDENT ", " ", d2$TitleResp)
+
+# Senior Vice President
+d2$TitleRole[ grepl( " SENIOR VICE PRESIDENT ", d2$ TitleResp) ] <- paste(d2$TitleRole, " SENIOR VICE PRESIDENT ", sep ="")[ grepl( " SENIOR VICE PRESIDENT ", d2$ TitleResp) ]
+d2$TitleResp <- gsub( " SENIOR VICE PRESIDENT ", " ", d2$TitleResp)
+
+# Executive Vice President
+d2$TitleRole[ grepl( " EXECUTIVE VICE PRESIDENT ", d2$ TitleResp) ] <- paste(d2$TitleRole, " EXECUTIVE VICE PRESIDENT ", sep ="")[ grepl( " EXECUTIVE VICE PRESIDENT ", d2$ TitleResp) ]
+d2$TitleResp <- gsub( " EXECUTIVE VICE PRESIDENT ", " ", d2$TitleResp)
+
+# Vice President
+d2$TitleRole[ grepl( " VICE PRESIDENT ", d2$ TitleResp) ] <- paste(d2$TitleRole, " VICE PRESIDENT ", sep ="")[ grepl( " VICE PRESIDENT ", d2$ TitleResp) ]
+d2$TitleResp <- gsub( " VICE PRESIDENT ", " ", d2$TitleResp)
+
+#Senior 
+d2$TitleRole[ grepl( " SENIOR ", d2$ TitleResp) ] <- paste(d2$TitleRole, " SENIOR ", sep ="")[ grepl( " SENIOR ", d2$ TitleResp) ]
+d2$TitleResp <- gsub( " SENIOR ", " ", d2$TitleResp)
+
+# DEPUTY
+d2$TitleRole[ grepl( " DEPUTY ", d2$ TitleResp) ] <- paste(d2$TitleRole, " DEPUTY ", sep ="")[ grepl( " DEPUTY ", d2$ TitleResp) ]
+d2$TitleResp <- gsub( " DEPUTY ", " ", d2$TitleResp)
+
+#President
+d2$TitleRole[ grepl( " PRESIDENT ", d2$ TitleResp) ] <- paste(d2$TitleRole, " PRESIDENT ", sep ="")[ grepl( " PRESIDENT ", d2$ TitleResp) ]
+d2$TitleResp <- gsub( " PRESIDENT ", " ", d2$TitleResp)
+
+#" TRUSTEE ",
+d2$TitleRole[ grepl( " TRUSTEE ", d2$ TitleResp) ] <- paste(d2$TitleRole, " TRUSTEE ", sep ="")[ grepl( " TRUSTEE ", d2$ TitleResp) ]
+d2$TitleResp <- gsub( " TRUSTEE ", " ", d2$TitleResp)
+
+#" MANAGER ",
+d2$TitleRole[ grepl( " MANAGER ", d2$ TitleResp) ] <- paste(d2$TitleRole, " MANAGER ", sep ="")[ grepl( " MANAGER ", d2$ TitleResp) ]
+d2$TitleResp <- gsub( " MANAGER ", " ", d2$TitleResp)
+
+#" MANAGEMENT "
+d2$TitleRole[ grepl( " MANAGEMENT ", d2$ TitleResp) ] <- paste(d2$TitleRole, " MANAGEMENT ", sep ="")[ grepl( " MANAGEMENT ", d2$ TitleResp) ]
+d2$TitleResp <- gsub( " MANAGEMENT ", " ", d2$TitleResp)
+
+#" COORDINATOR "
+d2$TitleRole[ grepl( " COORDINATOR ", d2$ TitleResp) ] <- paste(d2$TitleRole, " COORDINATOR ", sep ="")[ grepl( " COORDINATOR ", d2$ TitleResp) ]
+d2$TitleResp <- gsub( " COORDINATOR ", " ", d2$TitleResp)
+
+#" DEAN " 
+d2$TitleRole[ grepl( " DEAN ", d2$ TitleResp) ] <- paste(d2$TitleRole, " DEAN ", sep ="")[ grepl( " DEAN ", d2$ TitleResp) ]
+d2$TitleResp <- gsub( " DEAN ", " ", d2$TitleResp)
+
+#" SUPERVISING "
+d2$TitleRole[ grepl( " SUPERVISING ", d2$ TitleResp) ] <- paste(d2$TitleRole, " SUPERVISING ", sep ="")[ grepl( " SUPERVISING ", d2$ TitleResp) ]
+d2$TitleResp <- gsub( " SUPERVISING ", " ", d2$TitleResp)
+
+#" DEPARTMENT CHAIR "
+d2$TitleRole[ grepl( " DEPARTMENT CHAIR ", d2$ TitleResp) ] <- paste(d2$TitleRole, " DEPARTMENT CHAIR ", sep ="")[ grepl( " DEPARTMENT CHAIR ", d2$ TitleResp) ]
+d2$TitleResp <- gsub( " DEPARTMENT CHAIR ", " ", d2$TitleResp)
+
+```
+
+## Titles that need logical Operators
+
+```{r}
+# Executive
+d2$TitleRole[ grepl( " EXECUTIVE ", d2$ TitleResp ) & !grepl( " CHIEF ", d2$TitleResp )  & !grepl( " EXECUTIVE DIRECTOR ", d2$TitleResp ) & d2$ADMIN.SUP != 1 ] <- paste(d2$TitleRole, " EXECUTIVE ", sep ="")[ grepl( " EXECUTIVE ", d2$TitleResp ) & !grepl( " CHIEF ", d2$TitleResp )  & !grepl( " EXECUTIVE DIRECTOR ", d2$TitleResp ) & d2$ADMIN.SUP != 1 ]
+
+d2$TitleResp[ grepl( " EXECUTIVE ", d2$ TitleResp ) & !grepl( " CHIEF ", d2$TitleResp )  & !grepl( " EXECUTIVE DIRECTOR ", d2$TitleResp ) & d2$ADMIN.SUP != 1 ] <- gsub( " EXECUTIVE ", " ",  d2$TitleResp )[ grepl( " EXECUTIVE ", d2$ TitleResp ) & !grepl( " CHIEF ", d2$TitleResp )  & !grepl( " EXECUTIVE DIRECTOR ", d2$TitleResp ) & d2$ADMIN.SUP != 1 ]
+
+# DIRECTOR
+d2$TitleRole[ grepl( " DIRECTOR ", d2$ TitleResp ) &  !grepl( " EXECUTIVE ", d2$TitleResp ) ] <- paste(d2$TitleRole, " DIRECTOR ", sep ="")[ grepl( " DIRECTOR ", d2$ TitleResp ) &  !grepl( " EXECUTIVE ", d2$TitleResp ) ]
+d2$TitleResp[ grepl( " DIRECTOR ", d2$ TitleResp ) &  !grepl( " EXECUTIVE ", d2$TitleResp ) ] <- gsub( " DIRECTOR ", " ", d2$TitleResp )[ grepl( " DIRECTOR ", d2$ TitleResp ) &  !grepl( " EXECUTIVE ", d2$TitleResp ) ]
+
+
+# ASSISTANT Only if not Administrative Support
+d2$TitleRole[ grepl( " ASSISTANT ", d2$ TitleResp ) & d2$ADMIN.SUP != 1 ] <- paste(d2$TitleRole, " ASSISTANT ", sep ="")[ grepl( " ASSISTANT ", d2$ TitleResp ) & d2$ADMIN.SUP != 1 ]
+d2$TitleResp[ grepl( " ASSISTANT ", d2$ TitleResp ) & d2$ADMIN.SUP != 1 ] <- gsub( " ASSISTANT ", " ", d2$TitleResp)[ grepl( " ASSISTANT ", d2$ TitleResp ) & d2$ADMIN.SUP != 1 ]
+
+# ASSOCIATE  Only if not Administrative Support
+d2$TitleRole[ grepl( " ASSOCIATE ", d2$ TitleResp ) & d2$ADMIN.SUP != 1 ] <- paste(d2$TitleRole, " ASSOCIATE ", sep ="")[ grepl( " ASSOCIATE ", d2$ TitleResp ) & d2$ADMIN.SUP != 1 ]
+d2$TitleResp[ grepl( " ASSOCIATE ", d2$ TitleResp ) & d2$ADMIN.SUP != 1 ] <- gsub( " ASSOCIATE ", " ", d2$TitleResp)[ grepl( " ASSOCIATE ", d2$ TitleResp ) & d2$ADMIN.SUP != 1 ]
+
+Title.Test <- cbind(as.character(d2$TitleTxt), d2$TitleTxt2, d2$TitleRole, d2$TitleResp ) %>% as.data.frame() 
+colnames(Title.Test) <- c("Title", "Cleaned Title", "Role", "Responsibilty")
+
+#DIVISION HEAD
+d2$TitleRole[ grepl( " DIVISION HEAD ", d2$ TitleResp ) ] <- paste(d2$TitleRole, " DIVISION HEAD ", sep ="")[ grepl( " DIVISION HEAD ", d2$ TitleResp )]
+d2$TitleResp[ grepl( " DIVISION HEAD ", d2$ TitleResp ) ] <- gsub( " DIVISION HEAD ", " ", d2$TitleResp)[ grepl( " DIVISION HEAD ", d2$ TitleResp )]
+
+#" HEAD "
+d2$TitleRole[ grepl( " HEAD ", d2$TitleResp) & !grepl( " HEAD START ", d2$ TitleResp) & !grepl(" MASTER ", d2$TitleResp) & !grepl(" SCHOOL ", d2$TitleResp)  ] <- paste(d2$TitleRole, " HEAD ", sep ="")[ grepl( " HEAD ", d2$TitleResp) & !grepl( " HEAD START ", d2$ TitleResp) & !grepl(" MASTER ", d2$TitleResp) & !grepl(" SCHOOL ", d2$TitleResp)  ]
+d2$TitleResp[ grepl( " HEAD ", d2$TitleResp) & !grepl( " HEAD START ", d2$ TitleResp) & !grepl(" MASTER ", d2$TitleResp) & !grepl(" SCHOOL ", d2$TitleResp)  ] <- gsub( " HEAD ", " ", d2$TitleResp )[ grepl( " HEAD ", d2$TitleResp) & !grepl( " HEAD START ", d2$ TitleResp) & !grepl(" MASTER ", d2$TitleResp) & !grepl(" SCHOOL ", d2$TitleResp ) ]
+```
+
+## Remove Extra Spaces from Titles
+
+```{r}
+d2$TitleResp <- gsub( "  ", " ", d2$TitleResp )
+d2$TitleResp <- gsub( "  ", " ", d2$TitleResp )
+d2$TitleResp <- gsub( "  ", " ", d2$TitleResp )
+d2$TitleResp <- gsub( "  ", " ", d2$TitleResp )
+d2$TitleResp <- gsub( "  ", " ", d2$TitleResp )
+d2$TitleResp <- gsub( "  ", " ", d2$TitleResp )
+d2$TitleResp <- gsub( "  ", " ", d2$TitleResp )
+d2$TitleResp <- gsub( "  ", " ", d2$TitleResp )
+
+
+d2$TitleRole <- gsub( "  ", " ", d2$TitleRole )
+d2$TitleRole <- gsub( "  ", " ", d2$TitleRole )
+d2$TitleRole <- gsub( "  ", " ", d2$TitleRole )
+d2$TitleRole <- gsub( "  ", " ", d2$TitleRole )
+d2$TitleRole <- gsub( "  ", " ", d2$TitleRole )
+d2$TitleRole <- gsub( "  ", " ", d2$TitleRole )
+d2$TitleRole <- gsub( "  ", " ", d2$TitleRole )
+d2$TitleRole <- gsub( "  ", " ", d2$TitleRole )
+                                                                                                  
+	 
+```
+
+
+## Check 25 Random Titles
+
+```{r}
+Title.Test <- cbind(as.character(d2$TitleTxt), d2$TitleTxt2, d2$TitleRole, d2$TitleResp ) %>% as.data.frame() 
+colnames(Title.Test) <- c("Title", "Cleaned Title", "Role", "Responsibilty")
+
+set.seed(100)
+ii<-sample(1:nrow(d2), 25 )
+Title.Test[ii,] %>% knitr::kable()
+
+```
+
+## Save
+
+```{r}
+
+saveRDS( d2, "Data/roles-and-responsibility.rds")
+
+```
