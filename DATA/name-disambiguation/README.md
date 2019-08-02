@@ -28,6 +28,10 @@ There are also conflicts in spelling of the proper names. For example, should Je
 
 For purposes of disambiguation we would not want to standardize the spelling of names, Shawn versus Sean, etc. But we would want to map all diminuitives onto their formal versions. 
 
+One approach would be to map all nicknames onto proper names, and all proper names onto the most common version.
+
+One Abraham to rule them all:  ![](img/abraham.png)
+
 Some current resources and dictionaries:
 
 https://github.com/carltonnorthern/nickname-and-diminutive-names-lookup
