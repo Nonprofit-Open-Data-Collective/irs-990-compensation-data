@@ -58,28 +58,27 @@ p
 ```
 
 
-|    |name                    |salutation |first_name |middle_name |last_name     |suffix |gender |gender_confidence |
-|:---|:-----------------------|:----------|:----------|:-----------|:-------------|:------|:------|:-----------------|
-|540 |Tim Ko                  |           |TIM        |            |KO            |       |M      |100               |
-|541 |Dr Latha Venkatesh      |DR         |LATHA      |            |VENKATESH     |       |U      |50.0              |
-|542 |Dr Brian Ondulick       |DR         |ONDULICK   |            |BRIAN         |       |U      |50.0              |
-|543 |Dr Wayne Woodard        |DR         |WAYNE      |            |WOODARD       |       |M      |100               |
-|544 |Dr Richard Byers        |DR         |RICHARD    |            |BYERS         |       |M      |99.8              |
-|545 |Dr Linda Bailey         |DR         |LINDA      |            |BAILEY        |       |F      |100               |
-|546 |Mark Smith              |           |MARK       |            |SMITH         |       |M      |99.5              |
-|547 |Steve Chavez            |           |STEVE      |            |CHAVEZ        |       |M      |100               |
-|548 |Ronald Connovich        |           |CONNOVICH  |            |RONALD        |       |U      |50.0              |
-|549 |DELMER HOLLINGSWORTH JR |           |DELMER     |            |HOLLINGSWORTH |JR     |M      |100               |
-|550 |HATTIE OUTLAW ASKEW     |           |HATTIE     |OUTLAW      |ASKEW         |       |F      |100               |
-|551 |LUCY ROBINSON           |           |LUCY       |            |ROBINSON      |       |F      |100               |
-|552 |EDITH YOUNG             |           |EDITH      |            |YOUNG         |       |F      |100               |
-|553 |JUNE LEVESQUE           |           |JUNE       |            |LEVESQUE      |       |F      |100               |
-|554 |BAXTER MCLENDON MD      |MD         |MCLENDON   |            |BAXTER        |       |U      |50.0              |
-|555 |CAROLYN THEODORE        |           |CAROLYN    |            |THEODORE      |       |F      |100               |
-|556 |YORK GLOVER             |           |YORK       |            |GLOVER        |       |U      |50.0              |
-|557 |REV DR RENTY KITTY JR   |REV        |KITTY      |            |RENTY         |JR     |F      |100               |
-|558 |JORETTA SIMMONS         |           |JORETTA    |            |SIMMONS       |       |U      |50.0              |
-|559 |ROLAND J GARDNER        |           |ROLAND     |J           |GARDNER       |       |M      |100               |
-|560 |CATHY BAGLEY MD         |MD         |CATHY      |            |BAGLEY        |       |F      |100               |
-
+|name                    |salutation |first_name |middle_name |last_name     |suffix |gender |gender_confidence |
+|:-----------------------|:----------|:----------|:-----------|:-------------|:------|:------|:-----------------|
+|Tim Ko                  |           |TIM        |            |KO            |       |M      |100               |
+|Dr Latha Venkatesh      |DR         |LATHA      |            |VENKATESH     |       |U      |50.0              |
+|Dr Brian Ondulick       |DR         |ONDULICK   |            |BRIAN         |       |U      |50.0              |
+|Dr Wayne Woodard        |DR         |WAYNE      |            |WOODARD       |       |M      |100               |
+|Dr Richard Byers        |DR         |RICHARD    |            |BYERS         |       |M      |99.8              |
+|Dr Linda Bailey         |DR         |LINDA      |            |BAILEY        |       |F      |100               |
+|Mark Smith              |           |MARK       |            |SMITH         |       |M      |99.5              |
+|Steve Chavez            |           |STEVE      |            |CHAVEZ        |       |M      |100               |
+|Ronald Connovich        |           |CONNOVICH  |            |RONALD        |       |U      |50.0              |
+|DELMER HOLLINGSWORTH JR |           |DELMER     |            |HOLLINGSWORTH |JR     |M      |100               |
+|HATTIE OUTLAW ASKEW     |           |HATTIE     |OUTLAW      |ASKEW         |       |F      |100               |
+|LUCY ROBINSON           |           |LUCY       |            |ROBINSON      |       |F      |100               |
+|EDITH YOUNG             |           |EDITH      |            |YOUNG         |       |F      |100               |
+|JUNE LEVESQUE           |           |JUNE       |            |LEVESQUE      |       |F      |100               |
+|BAXTER MCLENDON MD      |MD         |MCLENDON   |            |BAXTER        |       |U      |50.0              |
+|CAROLYN THEODORE        |           |CAROLYN    |            |THEODORE      |       |F      |100               |
+|YORK GLOVER             |           |YORK       |            |GLOVER        |       |U      |50.0              |
+|REV DR RENTY KITTY JR   |REV        |KITTY      |            |RENTY         |JR     |F      |100               |
+|JORETTA SIMMONS         |           |JORETTA    |            |SIMMONS       |       |U      |50.0              |
+|ROLAND J GARDNER        |           |ROLAND     |J           |GARDNER       |       |M      |100               |
+|CATHY BAGLEY MD         |MD         |CATHY      |            |BAGLEY        |       |F      |100               |
 
