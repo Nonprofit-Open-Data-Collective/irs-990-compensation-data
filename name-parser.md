@@ -82,3 +82,38 @@ p
 |ROLAND J GARDNER        |           |ROLAND     |J           |GARDNER       |       |M      |100               |
 |CATHY BAGLEY MD         |MD         |CATHY      |            |BAGLEY        |       |F      |100               |
 
+
+
+### Needs Attention
+
+Not clear why this name is having problems. 
+
+|name                    |salutation |first_name |middle_name |last_name     |suffix |gender |gender_confidence |
+|:-----------------------|:----------|:----------|:-----------|:-------------|:------|:------|:-----------------|
+|Dr Brian Ondulick       |DR         |ONDULICK   |            |BRIAN         |       |U      |50.0              |
+|Dr Latha Venkatesh      |DR         |LATHA      |            |VENKATESH     |       |U      |50.0              |
+
+The last name is not included in the Census database of names (I suspect they only report names that occur over a threshold number of times). So it returns zero, which might confuse the algorithm. 
+
+```r
+> get.census.data( "ONDULICK" )
+       name ordinal male_value female_value first_name_value last_name_value
+1: ONDULICK       1          0            0                0               0
+> get.census.data( "BRIAN" )
+    name ordinal male_value female_value first_name_value last_name_value
+1: BRIAN       1    1054140         1518          1055658            4214
+> get.census.data( "LATHA" )
+    name ordinal male_value female_value first_name_value last_name_value
+1: LATHA       1          0            0                0               0
+> get.census.data( "VENKATESH" )
+        name ordinal male_value female_value first_name_value last_name_value
+1: VENKATESH       1          0            0                0            1082 
+```
+The second case makes sense because there are no values for either names, so it keeps them in the same order. Or is it using the last_name_value? 
+
+Can we add a rule that would make sense here? If one name is clearly a first name, and no data for other, then assign the case with data first, and fill in the second last? 
+
+```r
+data( "census.names" )
+```
+
