@@ -27,36 +27,7 @@ Gender is added by coding the first name against the Social Security Administrat
 
 ## Raw Text
 
-|x             |
-|:-------------|
-|ceo           |
-|cfo           |
-|treasurer     |
-|dep.ceo       |
-|sec           |
-|coo           |
-|trust         |
-|hum.res       |
-|dep.head      |
-|man           |
-|dev           |
-|tech          |
-|comm          |
-|other         |
-|project       |
-|legal         |
-|facilities    |
-|admin.sup     |
-|med.man       |
-|health.hum    |
-|train         |
-|academic.man  |
-|profesional   |
-|other.prof    |
-|academic.prof |
-|med.prof      |
-|ceo.prob      |
-|cfo.prob      |
+_cfo_, _executive director - no longer director_, _president local # 18_, _foundation mana_, _director of park planning & development_, _director_, _scout execut_, _controller_, _dir & president_, _senior vp_, _operations manager_, _manager/ceo_, _chief executive officer_, _director_, _business man_, _executive di_, _executive director_, _executive di_, _executive director as of 10/25/2016 3_, _program director_, _executive di_, _business agent_, _executive director_, _field representative - new_ and _golf course superintendent_
 
 
 ## Clean Titles 
