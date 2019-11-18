@@ -27,11 +27,39 @@ Gender is added by coding the first name against the Social Security Administrat
 
 ## Raw Text
 
+|x             |
+|:-------------|
+|ceo           |
+|cfo           |
+|treasurer     |
+|dep.ceo       |
+|sec           |
+|coo           |
+|trust         |
+|hum.res       |
+|dep.head      |
+|man           |
+|dev           |
+|tech          |
+|comm          |
+|other         |
+|project       |
+|legal         |
+|facilities    |
+|admin.sup     |
+|med.man       |
+|health.hum    |
+|train         |
+|academic.man  |
+|profesional   |
+|other.prof    |
+|academic.prof |
+|med.prof      |
+|ceo.prob      |
+|cfo.prob      |
 
 
-## New Taxonomies
-
-### Clean Titles 
+## Clean Titles 
 
 Routines have been applied to clean up the raw text, standardize use of common titles, and fix spelling. 
 
@@ -63,15 +91,44 @@ Routines have been applied to clean up the raw text, standardize use of common t
 |PRESIDENT                          |PRESIDENT                          |
 |GENERAL MANAGER                    |GENERAL MANAGER                    |
 
-### 26 Custom Categories 
+
+## 26 Custom Categories 
 
 Binary, non-mutually exclusive titles people hold 
 
-_CEO_, _CFO_, _TREASURER_, _DEP.CEO_, _SEC_, _COO_, _TRUST_, _HUM.RES_, _DEP.HEAD_, _MAN_, _DEV_, _TECH_, _COMM_, _OTHER_, _PROJECT_, _LEGAL_, _FACILITIES_, _ADMIN.SUP_, _MED.MAN_, _HEALTH.HUM_, _TRAIN_, _ACADEMIC.MAN_, _PROFESIONAL_, _OTHER.PROF_, _ACADEMIC.PROF_, _MED.PROF_
+|**TITLES**    |
+|:-------------|
+|CEO           |
+|CFO           |
+|TREASURER     |
+|DEP.CEO       |
+|SEC           |
+|COO           |
+|TRUST         |
+|HUM.RES       |
+|DEP.HEAD      |
+|MAN           |
+|DEV           |
+|TECH          |
+|COMM          |
+|OTHER         |
+|PROJECT       |
+|LEGAL         |
+|FACILITIES    |
+|ADMIN.SUP     |
+|MED.MAN       |
+|HEALTH.HUM    |
+|TRAIN         |
+|ACADEMIC.MAN  |
+|PROFESIONAL   |
+|OTHER.PROF    |
+|ACADEMIC.PROF |
+|MED.PROF      |
 
 
+<br>
 
-### Refined IRS Categories 
+## Refined IRS Categories 
 
 * Management (Mgmt) - hold a leadership position in the organization 
 * Highly-paid professionals (HPP) - no official leadership positions, but are reported because of compensation levels 
