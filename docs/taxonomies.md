@@ -12,7 +12,7 @@ Part VII of the IRS form 990 requires nonprofit organizations to disclose inform
 
 ![](assets/images/irs-990-part-vii.png) 
 <br>
-![](assets/images/irs-990-ez-part-iv.png) 
+![](assets/images/990-ez-part-iv.png) 
 
 
 Similar to the **name** field on the IRS 990 e-file forms, the **title** field is an unstructured text field where the organization enters the titles of their managers, directors, and key employees. As a result, although we might expect only a few dozen common titles in reality we observe over 750,000 unique titles used because of the way they are entered, spelled, abbreviated, or combined.
