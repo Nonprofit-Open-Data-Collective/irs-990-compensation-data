@@ -23,12 +23,12 @@ _cfo_, _executive director - no longer director_, _president local # 18_, _found
 
 On the 990 form only (not the 990-EZ), the IRS uses check-boxes to designate roles of those listed on the form.  See below for more detailed definitions provided on the 990 instructions.
 
-[] **Individual trustee or director** - "a member of the organization's governing body, but only if the member has voting rights".  
-[] **Institutional trustee** - "a trustee that isn't an individual or natural person but an organization, e.g. a bank or trust". 
-[] **Officer** - "a person elected or appointed to manage the organization's daily operations". 
-[] **Key employee** - must have (1) compensation over $150,000, (2) "has responsibilities, powers, or influence over the organization as a whole that is similar to those of officers, directors, or trustees", and (3) is among the top 20 managers in the organization. 
-[] **Highest compensated** - five highest paid non-officer and non-key employees with compensation in excess of $100,000. 
-[] **Former** - former officers, key employees, and highly compensated employees with currently makes over $100,000 as a consultant or ex-officio, or any former director or trustee that receives over $10,000. 
+- [ ] **Individual trustee or director** - "a member of the organization's governing body, but only if the member has voting rights".   
+- [ ] **Institutional trustee** - "a trustee that isn't an individual or natural person but an organization, e.g. a bank or trust".   
+- [ ] **Officer** - "a person elected or appointed to manage the organization's daily operations".   
+- [ ] **Key employee** - must have (1) compensation over $150,000, (2) "has responsibilities, powers, or influence over the organization as a whole that is similar to those of officers, directors, or trustees", and (3) is among the top 20 managers in the organization.   
+- [ ] **Highest compensated** - five highest paid non-officer and non-key employees with compensation in excess of $100,000.   
+- [ ] **Former** - former officers, key employees, and highly compensated employees with currently makes over $100,000 as a consultant or ex-officio, or any former director or trustee that receives over $10,000.   
 
 The instructions require that only one option is selected "unless person is both an officer and a director/trustee." **In practice, there seems to be a lot of confusion about some of these definitions and nonprofits are fairly inconsistent in how they apply these codes.** 
 
