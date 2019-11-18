@@ -62,39 +62,44 @@ Routines have been applied to clean up the raw text, standardize use of common t
 |PRESIDENT                          |PRESIDENT                          |
 |GENERAL MANAGER                    |GENERAL MANAGER                    |
 
+<br>
+
+
 
 ## 26 Custom Categories 
 
 Binary, non-mutually exclusive titles people hold 
 
-|**TITLES**    |
-|:-------------|
-|CEO           |
-|CFO           |
-|TREASURER     |
-|DEP.CEO       |
-|SEC           |
-|COO           |
-|TRUST         |
-|HUM.RES       |
-|DEP.HEAD      |
-|MAN           |
-|DEV           |
-|TECH          |
-|COMM          |
-|OTHER         |
-|PROJECT       |
-|LEGAL         |
-|FACILITIES    |
-|ADMIN.SUP     |
-|MED.MAN       |
-|HEALTH.HUM    |
-|TRAIN         |
-|ACADEMIC.MAN  |
-|PROFESIONAL   |
-|OTHER.PROF    |
-|ACADEMIC.PROF |
-|MED.PROF      |
+|**TITLE**     |**description** |
+|:-------------|:-----------|
+|CEO           |description |
+|CFO           |description |
+|TREASURER     |description |
+|DEP.CEO       |description |
+|SEC           |description |
+|COO           |description |
+|TRUST         |description |
+|HUM.RES       |description |
+|DEP.HEAD      |description |
+|MAN           |description |
+|DEV           |description |
+|TECH          |description |
+|COMM          |description |
+|OTHER         |description |
+|PROJECT       |description |
+|LEGAL         |description |
+|FACILITIES    |description |
+|ADMIN.SUP     |description |
+|MED.MAN       |description |
+|HEALTH.HUM    |description |
+|TRAIN         |description |
+|ACADEMIC.MAN  |description |
+|PROFESIONAL   |description |
+|OTHER.PROF    |description |
+|ACADEMIC.PROF |description |
+|MED.PROF      |description |
+|CEO.PROB      |description |
+|CFO.PROB      |description | 
 
 
 <br>
@@ -109,6 +114,9 @@ Binary, non-mutually exclusive titles people hold
 * C.Level - chief level leadership positions (CEO, CFO, COO) and equivalents  
 * Interim - serving only a temporary role in the position 
 * Former - are listed as outgoing positions 
+
+<br>
+
 
 
 ## Roles and Responsibilities 
