@@ -25,9 +25,40 @@ Details on IRS 990 e-file data from AWS.
 
 ## Raw Data Problems 
 
-**Unstructured Text**
 
-_EXECUTIVE DI_, _EXEC DIREC_, _PRESIDENT_, _TREASURER_, _SECRETARY_, _Director_, _SECRETARY-TREASURER/BUSINESS AGENT_, _PRESIDENT/BUSINESS AGENT_, _VICE PRESIDENT/BUSINESS AGENT_, _RECORDING SECRETARY/BUSINESS AGENT_, _PRESIDENT_, _VICE PRESIDENT_, _SECRETARY-TREASURER_, _RECORDING SECRETARY_, _TRUSTEE/ORGANIZER_, _BUSINESS MGR_, _SECRETARY/TREAS_, _Executive Dir._, _EXECUTIVE VICE PRESIDENT_, _BUS MANAGER_, _VICE PRESIDENT (RETIRED 2016)_, _SEC-TREAS_, _VICE PRESIDENT_, _PRESIDENT_ and _GENERAL MANAGER_
+
+|**Unstructured Text**            |
+|:-------------|
+|ceo           |
+|cfo           |
+|treasurer     |
+|dep.ceo       |
+|sec           |
+|coo           |
+|trust         |
+|hum.res       |
+|dep.head      |
+|man           |
+|dev           |
+|tech          |
+|comm          |
+|other         |
+|project       |
+|legal         |
+|facilities    |
+|admin.sup     |
+|med.man       |
+|health.hum    |
+|train         |
+|academic.man  |
+|profesional   |
+|other.prof    |
+|academic.prof |
+|med.prof      |
+|ceo.prob      |
+|cfo.prob      |
+
+
 
 **Poorly-Structured Codes**
 
