@@ -22,20 +22,21 @@ Importance of nonprofit sector leaders and stewards... individuals are unit of a
 
 Details on IRS 990 e-file data from AWS.
 
+<br>
+
 
 ## Raw Data Problems 
+
+Challenges include:
 
 **Unstructured text**
 
 _cfo_, _executive director - no longer director_, _president local # 18_, _foundation mana_, _director of park planning & development_, _director_, _scout execut_, _controller_, _dir & president_, _senior vp_, _operations manager_, _manager/ceo_, _chief executive officer_, _director_, _business man_, _executive di_, _executive director_, _executive di_, _executive director as of 10/25/2016 3_, _program director_, _executive di_, _business agent_, _executive director_, _field representative - new_ and _golf course superintendent_
 
-
-
 **Poorly-Structured Codes**
 
-
-
 <br>
+
 
 
 ## Data Refinement 
@@ -47,6 +48,8 @@ _cfo_, _executive director - no longer director_, _president local # 18_, _found
 * Gender coding 
 * Synthetic IDs   
 
+
+<br>
 
 
 
