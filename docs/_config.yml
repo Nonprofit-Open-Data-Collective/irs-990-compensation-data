@@ -16,6 +16,7 @@ minimal_theme: false         # radically minimalistic theme
 
 navigation:                  # show navigation links in the header	
   - index.md
+  - taxonomies.md 
   - data.md  
   - white-paper.md
   - projects.md
