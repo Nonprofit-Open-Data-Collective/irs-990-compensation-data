@@ -4,15 +4,50 @@ title: Name and Title Ontology
 ---
 
 
-# Names
+# IRS Form 990 Fields 
+
+**Part VII: Compensation of Officers, Directors, Trustees, Key Employees, Highest Compensated Employees, and Independent Contractors**
+
+Part VII of the IRS form 990 requires nonprofit organizations to disclose information about organizational leadership, the board of directors, highly-compensated employees, and independent contractors. Both form 990 (the regular nonprofit tax form) and form 990-EZ (an abbreviated form that smaller nonprofits can elect to use) require disclosures about the organization's leadership. The fields differ slightly on each. 
+
+![](assets/images/irs-990-part-vii.png) 
+<br>
+![](assets/images/irs-990-ez-part-iv.png) 
+
+
+Similar to the **name** field on the IRS 990 e-file forms, the **title** field is an unstructured text field where the organization enters the titles of their managers, directors, and key employees. As a result, although we might expect only a few dozen common titles in reality we observe over 750,000 unique titles used because of the way they are entered, spelled, abbreviated, or combined.
+
+**Raw title text examples:**
+
+_cfo_, _executive director - no longer director_, _president local # 18_, _foundation mana_, _director of park planning & development_, _director_, _scout execut_, _controller_, _dir & president_, _senior vp_, _operations manager_, _manager/ceo_, _chief executive officer_, _director_, _business man_, _executive di_, _executive director_, _executive di_, _executive director as of 10/25/2016 3_, _program director_, _executive di_, _business agent_, _executive director_, _field representative - new_ and _golf course superintendent_
+
+On the 990 form only (not the 990-EZ), the IRS uses check-boxes to designate roles of those listed on the form.  See below for more detailed definitions provided on the 990 instructions.
+
+[] **Individual trustee or director** - "a member of the organization's governing body, but only if the member has voting rights".  
+[] **Institutional trustee** - "a trustee that isn't an individual or natural person but an organization, e.g. a bank or trust". 
+[] **Officer** - "a person elected or appointed to manage the organization's daily operations". 
+[] **Key employee** - must have (1) compensation over $150,000, (2) "has responsibilities, powers, or influence over the organization as a whole that is similar to those of officers, directors, or trustees", and (3) is among the top 20 managers in the organization. 
+[] **Highest compensated** - five highest paid non-officer and non-key employees with compensation in excess of $100,000. 
+[] **Former** - former officers, key employees, and highly compensated employees with currently makes over $100,000 as a consultant or ex-officio, or any former director or trustee that receives over $10,000. 
+
+The instructions require that only one option is selected "unless person is both an officer and a director/trustee." **In practice, there seems to be a lot of confusion about some of these definitions and nonprofits are fairly inconsistent in how they apply these codes.** 
+
+
+## Names Field
 
 The original dataset contains a raw text field for names with no restrictions on what can be entered. As a result, it is rather chaotic, difficult to distinguish first and last names, and can contain additional text:
 
  _Kimberly Opsahl_, _CARLETTA HAUCK_, _LORIN SARBACHER_, _CRAIG ATKINSON_, _ALAN ZILBERT_, _JILL BECKWITH_, _MELINDA MARRIOTT_, _MARTHA BURNES_, _JAMES MOCK_, _DR EMOGENE KAISER_, _D EDWARD COLE_,  _EWA_, _ROBERT BEAUDRY - PAST_,  _MARY JO DUNCAN_, _THIEN CHAU NGUYEN_, _LLOYD JAMES SR_ and _ELIZABETH SQUILLACE_
 
-## Standardization
 
-Names are parsed into the following fields:
+<br> 
+
+
+# Standardization of Fields 
+
+## Name Normalization 
+
+Raw name text fields are parsed into the following fields:
 
 * First name 
 * Middle name 
@@ -20,19 +55,22 @@ Names are parsed into the following fields:
 * Salutations and titles (MS, DR, PHD) 
 * Suffixes (JR, II, III) 
 
-Gender is added by coding the first name against the Social Security Administration's name database. 
+Gender has been added by matching the individual's first name to the Social Security Administration's birth certificate database that provides a count of men and women with that exact first name. Gender is assigned by selecting the mode of the two (proportion of people with that name that are male or female).  
+
+* Gender code 
+* Confidence (prop. of people with that first name and that gender) 
+
+<br>
 
 
-# Titles
+## Standardized Titles
 
-## Raw Text
-
-_cfo_, _executive director - no longer director_, _president local # 18_, _foundation mana_, _director of park planning & development_, _director_, _scout execut_, _controller_, _dir & president_, _senior vp_, _operations manager_, _manager/ceo_, _chief executive officer_, _director_, _business man_, _executive di_, _executive director_, _executive di_, _executive director as of 10/25/2016 3_, _program director_, _executive di_, _business agent_, _executive director_, _field representative - new_ and _golf course superintendent_
-
+We have attempted to convert the set of raw title codes to a small set of meaningful titles. Routines have been applied to clean up the raw text, fix spelling errors, convert abbreviations to a standardize set, and map . 
 
 ## Clean Titles 
 
-Routines have been applied to clean up the raw text, standardize use of common titles, and fix spelling. 
+In the initial step text processing routines are applied to remove punctuation, normalize capitalization, standardize abbreviations, and fix spelling errors.  
+
 
 |**Raw Text**                       |**Cleaned Text**                   |
 |:----------------------------------|:----------------------------------|
@@ -68,7 +106,7 @@ Routines have been applied to clean up the raw text, standardize use of common t
 
 ## 26 Custom Categories 
 
-Binary, non-mutually exclusive titles people hold 
+In the second step the clean titles are mapped to a set of 26 binary, non-mutually exclusive title codes. For example, Chief Executive Officer, CEO, Executive Director, and ED are all mapped onto the CEO [1/0] code. 
 
 |**TITLE**     |**description** |
 |:-------------|:-----------|
@@ -150,9 +188,7 @@ Example Horizontal Domains (Responsibilities)
 
 **Director or Trustee**
 
-A “director or trustee” is a member of the organization's governing body, but only if the member has voting rights. A director or trustee that served at any time during
-the organization's tax year is deemed a current director or trustee. Members of advisory boards that don't exercise any governance authority over the organization aren't considered
-directors or trustees.
+A “director or trustee” is a member of the organization's governing body, but only if the member has voting rights. A director or trustee that served at any time during the organization's tax year is deemed a current director or trustee. Members of advisory boards that don't exercise any governance authority over the organization aren't considered directors or trustees.
 
 An “institutional trustee” is a trustee that isn't an individual or natural person but an organization. For instance, a bank or trust company serving as the trustee of a trust is an institutional trustee.
 
