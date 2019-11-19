@@ -10,6 +10,8 @@ title: Name and Title Ontology
 
 Part VII of the IRS form 990 requires nonprofit organizations to disclose information about organizational leadership, the board of directors, highly-compensated employees, and independent contractors. Both form 990 (the regular nonprofit tax form) and form 990-EZ (an abbreviated form that smaller nonprofits can elect to use) require disclosures about the organization's leadership. The fields differ slightly on each. 
 
+## Title Field
+
 Similar to the **name** field on the IRS 990 e-file forms, the **title** field is an unstructured text field where the organization enters the titles of their managers, directors, and key employees. As a result, although we might expect only a few dozen common titles in reality we observe over 750,000 unique titles used because of the way they are entered, spelled, abbreviated, or combined.
 
 **Raw title text examples:**
